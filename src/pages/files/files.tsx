@@ -1,69 +1,36 @@
-import './files.css';
+import React from 'react';
 import ImageBox from '../../components/box';
 import { SimpleGrid, Spinner } from '@chakra-ui/react';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import imagenImportada from '../../assets/imagen1_2.jpg';
 import imagenImportada2 from '../../assets/imagen2_2.jpg';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { useEffect, useState } from 'react';
 
-function Files() {
-	useEffect(() => {
-		getMoreImages();
-	}, []);
-	const initialPost: JSX.Element[] = [];
-
-	const [dataPost, setDataPost] = useState(initialPost);
-	const [scrollData, setScrollData] = useState(initialPost);
-	const [hasMoreValue, setHasMoreValue] = useState(true);
-
-	useEffect(() => {
-		getMoreImages();
-	}, []);
-
-	function handleOnRowsScrollEnd() {
-		setHasMoreValue(true);
-		getMoreImages();
-	}
-	return (
-		<>
-			{scrollData ? (
-				<>
-					<InfiniteScroll
-						dataLength={scrollData.length}
-						next={handleOnRowsScrollEnd}
-						hasMore={hasMoreValue}
-						scrollThreshold={1}
-						loader={<Spinner />}
-						// Let's get rid of second scroll bar
-						style={{ overflow: 'unset' }}
-					>
-						<SimpleGrid columns={[1, 2, 4]} spacing={10}>
-							{scrollData.map((pokemon, index) => pokemon)}
-						</SimpleGrid>
-					</InfiniteScroll>
-				</>
-			) : (
-				<Spinner />
-			)}
-		</>
-	);
-
-	function getRandomPhoto() {
+const style = {
+	height: 30,
+	border: '1px solid green',
+	margin: 6,
+	padding: 8
+};
+interface status {
+	items: JSX.Element[];
+}
+class App extends React.Component {
+	getRandomPhoto() {
 		const array = [imagenImportada, imagenImportada2];
 		const random = Math.floor(Math.random() * array.length);
 		return array[random];
 	}
 
-	function getMoreImages() {
-		const array: JSX.Element[] = dataPost;
-		for (let i = 0; i < 20; i++) {
-			array.push(getPhotoComponent());
-			console.log(array.length);
+	getMoreImages() {
+		const array: JSX.Element[] = this.state ? this.state.items : [];
+		for (let i = 0; i < 25; i++) {
+			array.push(this.getPhotoComponent());
 		}
-		setDataPost(array);
+
+		return array;
 	}
 
-	function getPhotoComponent(): JSX.Element {
+	getPhotoComponent(): JSX.Element {
 		return (
 			<ImageBox
 				imageUrl="https://bit.ly/2Z4KKcF"
@@ -74,10 +41,41 @@ function Files() {
 				formattedPrice="$1900.00"
 				reviewCount={34}
 				rating={4}
-				image={getRandomPhoto()}
+				image={this.getRandomPhoto()}
 			></ImageBox>
+		);
+	}
+
+	state: status = {
+		items: this.getMoreImages()
+	};
+
+	fetchMoreData = () => {
+		// a fake async api call like which sends
+		// 20 more records in 1.5 secs
+		setTimeout(() => {
+			this.setState({
+				items: this.getMoreImages()
+			});
+		}, 3000);
+	};
+
+	render() {
+		return (
+			<div>
+				<InfiniteScroll
+					dataLength={this.state.items.length}
+					next={this.fetchMoreData}
+					hasMore={true}
+					loader={<h4>Loading...</h4>}
+				>
+					<SimpleGrid columns={[2, 3, 4]} spacing={10}>
+						{this.state.items}
+					</SimpleGrid>
+				</InfiniteScroll>
+			</div>
 		);
 	}
 }
 
-export default Files;
+export default App;
