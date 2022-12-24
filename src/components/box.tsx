@@ -18,7 +18,7 @@ function ImageBox(property: imageProps) {
 	return (
 		<Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
 			<Image
-				src={property.image}
+				src={`data:image/png;base64,${property.image}`}
 				alt={property.imageAlt}
 				fit="cover"
 				verticalAlign="center"

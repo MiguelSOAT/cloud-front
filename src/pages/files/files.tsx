@@ -2,72 +2,67 @@ import React from 'react';
 import ImageBox from '../../components/box';
 import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import imagenImportada from '../../assets/imagen1_2.jpg';
-import imagenImportada2 from '../../assets/imagen2_2.jpg';
+import axios from 'axios';
 
-const style = {
-	height: 30,
-	border: '1px solid green',
-	margin: 6,
-	padding: 8
-};
 interface status {
 	items: JSX.Element[];
 }
-class App extends React.Component {
-	getRandomPhoto() {
-		const array = [imagenImportada, imagenImportada2];
-		const random = Math.floor(Math.random() * array.length);
-		return array[random];
-	}
 
-	getMoreImages() {
+interface image {
+	file_name: string;
+	file_base64: string;
+}
+
+class App extends React.Component {
+	getMoreImages(images: image[]) {
 		const array: JSX.Element[] = this.state ? this.state.items : [];
-		for (let i = 0; i < 25; i++) {
-			array.push(this.getPhotoComponent());
+		for (const image of images) {
+			array.push(this.getPhotoComponent(image));
 		}
 
 		return array;
 	}
 
-	getPhotoComponent(): JSX.Element {
+	getPhotoComponent(image: image): JSX.Element {
 		return (
 			<ImageBox
 				imageUrl="https://bit.ly/2Z4KKcF"
 				imageAlt="Rear view of modern home with pool"
 				beds={3}
 				baths={2}
-				title="Modern home in city center in the heart of historic Los Angeles"
+				title={image.file_name}
 				formattedPrice="$1900.00"
 				reviewCount={34}
 				rating={4}
-				image={this.getRandomPhoto()}
+				image={image.file_base64}
 			></ImageBox>
 		);
 	}
 
 	state: status = {
-		items: this.getMoreImages()
+		items: []
 	};
 
-	fetchMoreData = () => {
-		// a fake async api call like which sends
-		// 20 more records in 1.5 secs
-		setTimeout(() => {
-			this.setState({
-				items: this.getMoreImages()
-			});
-		}, 3000);
+	fetchMoreData = async () => {
+		const response = await axios.get('http://192.168.0.146:8080/');
+		const images = await response.data.images;
+		console.log('requested');
+		this.setState({
+			items: this.getMoreImages(images)
+		});
 	};
 
 	render() {
+		if (this.state.items.length === 0) {
+			this.fetchMoreData();
+		}
 		return (
 			<div>
 				<InfiniteScroll
 					dataLength={this.state.items.length}
 					next={this.fetchMoreData}
 					hasMore={true}
-					loader={<h4>Loading...</h4>}
+					loader={<Spinner />}
 				>
 					<SimpleGrid columns={[2, 3, 4]} spacing={10}>
 						{this.state.items}
