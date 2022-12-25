@@ -12,24 +12,30 @@ interface imageProps {
 	reviewCount: number;
 	rating: number;
 	image: string;
+	extension: string;
 }
 
 function ImageBox(property: imageProps) {
 	return (
-		<Box maxW="sm" borderWidth="1px" borderRadius="lg" overflow="hidden">
+		<Box
+			maxW="sm"
+			borderWidth="1px"
+			borderRadius="lg"
+			overflow="hidden"
+			background="blackAlpha.100"
+		>
 			<Image
 				src={`data:image/png;base64,${property.image}`}
 				alt={property.imageAlt}
 				fit="cover"
 				verticalAlign="center"
 				align="center"
+				margin="auto"
+				borderRadius={5}
 			/>
 
 			<Box p="6">
-				<Box display="flex" alignItems="baseline">
-					<Badge borderRadius="full" px="2" colorScheme="teal">
-						New
-					</Badge>
+				{/* <Box display="flex" alignItems="baseline">
 					<Box
 						color="gray.500"
 						fontWeight="semibold"
@@ -40,29 +46,16 @@ function ImageBox(property: imageProps) {
 					>
 						{property.beds} beds &bull; {property.baths} baths
 					</Box>
-				</Box>
+				</Box> */}
 
 				<Box mt="1" fontWeight="semibold" as="h4" lineHeight="tight" noOfLines={1}>
 					{property.title}
 				</Box>
-
-				<Box>
-					{property.formattedPrice}
-					<Box as="span" color="gray.600" fontSize="sm">
-						/ wk
-					</Box>
-				</Box>
-
-				<Box display="flex" mt="2" alignItems="center">
-					{Array(5)
-						.fill('')
-						.map((_, i) => (
-							<StarIcon key={i} color={i < property.rating ? 'teal.500' : 'gray.300'} />
-						))}
-					<Box as="span" ml="2" color="gray.600" fontSize="sm">
-						{property.reviewCount} reviews
-					</Box>
-				</Box>
+			</Box>
+			<Box display="flex" mt="2" alignItems="right" noOfLines={1}>
+				<Badge borderRadius="full" px="2" colorScheme="teal">
+					{property.extension}
+				</Badge>
 			</Box>
 		</Box>
 	);

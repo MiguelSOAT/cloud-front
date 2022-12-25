@@ -11,6 +11,7 @@ interface status {
 interface image {
 	file_name: string;
 	file_base64: string;
+	extension: string;
 }
 
 class App extends React.Component {
@@ -35,6 +36,7 @@ class App extends React.Component {
 				reviewCount={34}
 				rating={4}
 				image={image.file_base64}
+				extension={image.extension}
 			></ImageBox>
 		);
 	}
