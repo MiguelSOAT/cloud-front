@@ -3,7 +3,7 @@ import ImageBox from '../../components/box';
 import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
-
+import Header from '../../template/header/header';
 interface status {
 	items: JSX.Element[];
 }
@@ -59,18 +59,20 @@ class App extends React.Component {
 			this.fetchMoreData();
 		}
 		return (
-			<div>
-				<InfiniteScroll
-					dataLength={this.state.items.length}
-					next={this.fetchMoreData}
-					hasMore={true}
-					loader={<Spinner />}
-				>
-					<SimpleGrid columns={[2, 3, 4]} spacing={10}>
-						{this.state.items}
-					</SimpleGrid>
-				</InfiniteScroll>
-			</div>
+			<Header>
+				<div>
+					<InfiniteScroll
+						dataLength={this.state.items.length}
+						next={this.fetchMoreData}
+						hasMore={true}
+						loader={<Spinner />}
+					>
+						<SimpleGrid columns={[2, 3, 4]} spacing={10}>
+							{this.state.items}
+						</SimpleGrid>
+					</InfiniteScroll>
+				</div>
+			</Header>
 		);
 	}
 }

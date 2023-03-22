@@ -1,6 +1,6 @@
 import { StatGroup, Stat, StatLabel, StatNumber, StatHelpText, StatArrow } from '@chakra-ui/stat';
-import './home.css';
 import Header from '../../template/header/header';
+
 function Home() {
 	return (
 		<Header>
