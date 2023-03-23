@@ -12,17 +12,18 @@ import {
 	Text,
 	useColorModeValue,
 	Link,
-	FormErrorMessage,
-	FormHelperText
+	FormErrorMessage
 } from '@chakra-ui/react';
-import { EventHandler, useState } from 'react';
+import { useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { NavLink } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-
+import { useNavigate } from 'react-router-dom';
+import { Field, Form, Formik } from 'formik';
+import './signup.css';
 export default function SignupCard() {
 	const [showPassword, setShowPassword] = useState(false);
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
@@ -36,19 +37,73 @@ export default function SignupCard() {
 	const isPasswordError = password === '';
 	const isConfirmPasswordError = confirmPassword === '';
 
+	const navigate = useNavigate();
+
 	const {
 		handleSubmit,
 		register,
 		formState: { errors, isSubmitting }
 	} = useForm();
 
-	function onSubmit(values: any) {
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				console.log(JSON.stringify(values, null, 2));
-				resolve(true);
-			}, 3000);
+	async function onSubmit(values: any, formProps: any) {
+		const username = values.username;
+		const password = values.password;
+
+		const payload = {
+			username: username,
+			password: password
+		};
+		console.log(payload);
+		const response: Response = await fetch('http://localhost:8080/v1/signup', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}, // *GET, POST, PUT, DELETE, etc.
+			mode: 'cors', // no-cors, *cors, same-origin
+			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: 'same-origin', // include, *same-origin, omit
+			referrerPolicy: 'no-referrer',
+			body: JSON.stringify(payload)
 		});
+
+		const json = await response.json();
+		if (response.status === 200) {
+			console.log(json);
+			localStorage.setItem('token', json.token);
+			navigate('/');
+		} else {
+			console.log('Error');
+			console.log(json);
+			formProps.setFieldError('authentication', json.message);
+		}
+	}
+
+	function validateUsername(value: string) {
+		let error;
+		if (!value) {
+			error = 'Name is required';
+		} else if (value.length < 3 || value.length > 20) {
+			error = 'Name must be between 3 and 20 characters';
+		}
+		return error;
+	}
+
+	function validatePassword(value: string) {
+		let error;
+		if (!value) {
+			error = 'Password is required';
+		} else if (value.length < 9) {
+			error = 'Password must be at least 9 characters';
+		}
+		return error;
+	}
+
+	function validatePasswordConfirm(pass: string, value: string) {
+		let error;
+		if (pass != value) {
+			error = 'Password and confirm password doesnt match';
+		}
+		return error;
 	}
 
 	return (
@@ -69,90 +124,145 @@ export default function SignupCard() {
 				</Stack>
 				<Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
 					<Stack spacing={4}>
-						<form onSubmit={handleSubmit(onSubmit)}>
-							<FormControl id="username" isRequired>
-								<FormLabel>Username</FormLabel>
-								<Input
-									id="username"
-									type="text"
-									{...register('username', {
-										required: 'This is required',
-										minLength: { value: 3, message: 'Minimum length should be 4' },
-										maxLength: { value: 20, message: 'Maximum length should be 20' }
-									})}
-								/>
-							</FormControl>
-							<FormControl id="password" isRequired>
-								<FormLabel>Password</FormLabel>
-								<InputGroup>
-									<Input
-										id="password"
-										type={showPassword ? 'text' : 'password'}
-										{...register('password', {
-											required: 'This is required',
-											minLength: { value: 6, message: 'Minimum length should be 6' },
-											maxLength: { value: 20, message: 'Maximum length should be 20' }
-										})}
-									/>
-									<InputRightElement h={'full'}>
-										<Button
-											variant={'ghost'}
-											onClick={() => setShowPassword((showPassword) => !showPassword)}
-										>
-											{showPassword ? <ViewIcon /> : <ViewOffIcon />}
-										</Button>
-									</InputRightElement>
-								</InputGroup>
-								<FormErrorMessage>Password is required</FormErrorMessage>
-							</FormControl>
-							<FormControl id="password-confirm" isRequired>
-								<FormLabel>Confirm Password</FormLabel>
-								<InputGroup>
-									<Input
-										id="password-confirm"
-										type={showConfirmPassword ? 'text' : 'password'}
-										{...register('password-confirm', {
-											required: 'This is required',
-											minLength: { value: 6, message: 'Minimum length should be 6' },
-											maxLength: { value: 20, message: 'Maximum length should be 20' }
-										})}
-									/>
-									<InputRightElement h={'full'}>
-										<Button
-											variant={'ghost'}
-											onClick={() =>
-												setShowConfirmPassword((showConfirmPassword) => !showConfirmPassword)
-											}
-										>
-											{showConfirmPassword ? <ViewIcon /> : <ViewOffIcon />}
-										</Button>
-									</InputRightElement>
-								</InputGroup>
-							</FormControl>
-							<Stack spacing={10} pt={2}>
-								<Button
-									loadingText="Submitting"
-									size="lg"
-									bg={'blue.400'}
-									color={'white'}
-									_hover={{
-										bg: 'blue.500'
-									}}
-									type="submit"
-									isLoading={isSubmitting}
-								>
-									Sign up
-								</Button>
-							</Stack>
-							<Stack pt={6}>
-								<Text align={'center'}>
-									Already a user?{' '}
-									<Link color={'blue.400'} as={NavLink} to="/login">
-										Login
-									</Link>
-								</Text>
-							</Stack>
-						</form>
+						<Formik
+							initialValues={{
+								username: '',
+								password: '',
+								passwordConfirm: '',
+								authentication: ''
+							}}
+							onSubmit={onSubmit}
+						>
+							{(props) => {
+								return (
+									<Form>
+										<FormControl id="username" isRequired>
+											<Field name="username" validate={validateUsername}>
+												{(formikObject: any) => (
+													<FormControl
+														isInvalid={
+															formikObject.form.errors.username &&
+															formikObject.form.touched.username
+														}
+													>
+														<FormLabel>Username</FormLabel>
+														<Input {...formikObject.field} type="text" />
+														<FormErrorMessage>{formikObject.form.errors.username}</FormErrorMessage>
+													</FormControl>
+												)}
+											</Field>
+											{/* <Input name="username" type="text" /> */}
+										</FormControl>
+										<FormControl id="password" isRequired>
+											<Field name="password" validate={validatePassword}>
+												{(formikObject: any) => (
+													<FormControl
+														isInvalid={
+															formikObject.form.errors.password &&
+															formikObject.form.touched.password
+														}
+													>
+														<FormLabel>Password</FormLabel>
+														<InputGroup>
+															<Input
+																{...formikObject.field}
+																type={showPassword ? 'text' : 'password'}
+															/>
+															<InputRightElement h={'full'}>
+																<Button
+																	variant={'ghost'}
+																	onClick={() => setShowPassword((showPassword) => !showPassword)}
+																>
+																	{showPassword ? <ViewIcon /> : <ViewOffIcon />}
+																</Button>
+															</InputRightElement>
+														</InputGroup>
+														<FormErrorMessage>{formikObject.form.errors.password}</FormErrorMessage>
+													</FormControl>
+												)}
+											</Field>
+										</FormControl>
+										<FormControl id="passwordConfirm" isRequired>
+											<Field
+												name="passwordConfirm"
+												validate={(value: string) =>
+													validatePasswordConfirm(props.values.password, value)
+												}
+											>
+												{(formikObject: any) => (
+													<FormControl
+														isInvalid={
+															formikObject.form.errors.passwordConfirm &&
+															formikObject.form.touched.passwordConfirm
+														}
+													>
+														<FormLabel>PasswordConfirm</FormLabel>
+														<InputGroup>
+															<Input
+																{...formikObject.field}
+																type={showPasswordConfirm ? 'text' : 'password'}
+															/>
+															<InputRightElement h={'full'}>
+																<Button
+																	variant={'ghost'}
+																	onClick={() =>
+																		setShowPasswordConfirm(
+																			(showPasswordConfirm) => !showPasswordConfirm
+																		)
+																	}
+																>
+																	{showPasswordConfirm ? <ViewIcon /> : <ViewOffIcon />}
+																</Button>
+															</InputRightElement>
+														</InputGroup>
+														<FormErrorMessage>
+															{formikObject.form.errors.passwordConfirm}
+														</FormErrorMessage>
+													</FormControl>
+												)}
+											</Field>
+											<FormErrorMessage>Password is required</FormErrorMessage>
+										</FormControl>
+										<FormControl id="authentication" isRequired>
+											<Field name="authentication">
+												{(formikObject: any) => (
+													<FormControl isInvalid={formikObject.form.errors.authentication}>
+														<FormErrorMessage>
+															{formikObject.form.errors.authentication}
+														</FormErrorMessage>
+													</FormControl>
+												)}
+											</Field>
+											<FormErrorMessage>Password is required</FormErrorMessage>
+										</FormControl>
+										<FormErrorMessage>{props.errors.authentication}</FormErrorMessage>
+										<Stack spacing={10} pt={2}>
+											<Button
+												loadingText="Submitting"
+												size="lg"
+												bg={'blue.400'}
+												color={'white'}
+												_hover={{
+													bg: 'blue.500'
+												}}
+												type="submit"
+												isLoading={isSubmitting}
+											>
+												Sign up
+											</Button>
+										</Stack>
+										<Stack pt={6}>
+											<Text align={'center'}>
+												Already a user?{' '}
+												<Link color={'blue.400'} as={NavLink} to="/login">
+													Login
+												</Link>
+											</Text>
+										</Stack>
+									</Form>
+								);
+							}}
+						</Formik>
 					</Stack>
 				</Box>
 			</Stack>
