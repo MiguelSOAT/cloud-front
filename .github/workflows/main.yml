@@ -2,7 +2,7 @@ name: Deploy cloud-front project
 run-name: ${{ github.actor }} is deploying new cloud-front modifications 🚀
 on: [push]
 jobs:
-  Deploy-docker:
+  Deploy-cloud-front:
     runs-on: self-hosted
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
@@ -10,6 +10,7 @@ jobs:
       - run: cd ~/cloud-front || mkdir ~/cloud-front && cd ~/cloud-front
       - name: Check out repository code
         uses: actions/checkout@v3
+      - run: npm i
       - run: npm run build
       - run: cd ~/docker && docker-compose down && docker-compose up -d || echo "Error while trying to start docker."
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
