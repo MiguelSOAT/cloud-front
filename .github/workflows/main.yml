@@ -1,5 +1,5 @@
-name: Deploy docker project
-run-name: ${{ github.actor }} is deploying new Docker modifications 🚀
+name: Deploy cloud-front project
+run-name: ${{ github.actor }} is deploying new cloud-front modifications 🚀
 on: [push]
 jobs:
   Deploy-docker:
@@ -13,6 +13,4 @@ jobs:
       - run: npm run build
       - run: cd ~/docker && docker-compose down && docker-compose up -d || echo "Error while trying to start docker."
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      # - run: pwd
-      # - run: npm i
       - run: echo "🍏 This job's status is ${{ job.status }}."
