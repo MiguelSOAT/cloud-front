@@ -54,7 +54,7 @@ export default function SignupCard() {
 			password: password
 		};
 		console.log(payload);
-		const response: Response = await fetch('http://localhost:8080/v1/signup', {
+		const response: Response = await fetch('/api/v1/signup', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -68,8 +68,7 @@ export default function SignupCard() {
 
 		const json = await response.json();
 		if (response.status === 200) {
-			console.log(json);
-			localStorage.setItem('token', json.token);
+			localStorage.setItem('username', username);
 			navigate('/');
 		} else {
 			console.log('Error');

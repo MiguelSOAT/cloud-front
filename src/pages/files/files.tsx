@@ -46,9 +46,8 @@ class App extends React.Component {
 	};
 
 	fetchMoreData = async () => {
-		const response = await axios.get('http://localhost:8080/v1');
+		const response = await axios.get('/api/v1/files');
 		const images = await response.data.images;
-		console.log('requested');
 		this.setState({
 			items: this.getMoreImages(images)
 		});

@@ -40,33 +40,26 @@ export default function SignupCard() {
 			username: username,
 			password: password
 		};
-		console.log(payload);
-		const url = `http://localhost:8080/v1/login/password?username=${username}&password=${password}`;
+
+		const url = `/api/v1/login/password?username=${username}&password=${password}`;
 		const response: Response = await fetch(url, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			mode: 'cors', // no-cors, *cors, same-origin
+			mode: 'same-origin', // no-cors, *cors, same-origin
 			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
 			credentials: 'same-origin', // include, *same-origin, omit
-			body: JSON.stringify(payload)
-		});
-
-		// retrieve cookie from response
-		const cookie = response.headers.get('Set-Cookie');
-		response.headers.forEach((value, name) => {
-			console.log(name, value);
+			body: JSON.stringify(payload),
+			redirect: 'follow'
 		});
 
 		// const json = await response.json();
 		if (response.status === 200) {
-			// console.log(json);
-			// localStorage.setItem('token', json.token);
-			// navigate('/');
+			localStorage.setItem('username', username);
+			navigate('/');
 		} else {
 			console.log('Error');
-			// console.log(json);
 			formProps.setFieldError('authentication', 'Invalid username or password');
 		}
 	}
@@ -195,7 +188,7 @@ export default function SignupCard() {
 										</Stack>
 										<Stack pt={6}>
 											<Text align={'center'}>
-												Already a user?{' '}
+												Do you want to join us?{' '}
 												<Link color={'blue.400'} as={NavLink} to="/signup">
 													Sign up
 												</Link>
