@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { ReactNode, useState } from 'react';
+import { Link as RouterLink, NavLink } from 'react-router-dom';
 import {
 	IconButton,
 	Avatar,
@@ -21,7 +21,11 @@ import {
 	MenuButton,
 	MenuDivider,
 	MenuItem,
-	MenuList
+	MenuList,
+	Breadcrumb,
+	BreadcrumbItem,
+	BreadcrumbLink,
+	Divider
 } from '@chakra-ui/react';
 import {
 	FiHome,
@@ -35,6 +39,7 @@ import {
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
+import { ChevronRightIcon } from '@chakra-ui/icons';
 
 interface LinkItemProps {
 	name: string;
@@ -50,6 +55,7 @@ const LinkItems: Array<LinkItemProps> = [
 
 export default function SidebarWithHeader({ children }: { children: ReactNode }) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
+
 	return (
 		<Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
 			<SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
@@ -68,6 +74,7 @@ export default function SidebarWithHeader({ children }: { children: ReactNode })
 			</Drawer>
 			<MobileNav onOpen={onOpen} />
 			<Box ml={{ base: 0, md: 60 }} p="4">
+				<DinamycBreadCrumb />
 				{children}
 			</Box>
 		</Box>
@@ -77,6 +84,54 @@ export default function SidebarWithHeader({ children }: { children: ReactNode })
 interface SidebarProps extends BoxProps {
 	onClose: () => void;
 }
+
+interface IBreadCrumbHeader {
+	path: string;
+	name: string;
+	isCurrentPage: 'isCurrentPage' | '';
+}
+
+const capitalize = (str: string, lower = false) =>
+	(lower ? str.toLowerCase() : str).replace(/(?:^|\s|["'([{])+\S/g, (match) => match.toUpperCase());
+
+const DinamycBreadCrumb = () => {
+	const currentPath = window.location.pathname;
+	const pathArray = currentPath.split('/');
+	const numberOfPath = pathArray.length;
+	const arrayOfBreadCrumbData: IBreadCrumbHeader[] = [];
+	let currentIterationPath = '';
+
+	for (let i = 0; i < numberOfPath; i++) {
+		const path = pathArray[i];
+		if (path !== '') {
+			currentIterationPath += `/${path}`;
+			arrayOfBreadCrumbData.push({
+				path: currentIterationPath,
+				name: capitalize(path),
+				isCurrentPage: i === numberOfPath - 1 ? 'isCurrentPage' : ''
+			});
+		}
+	}
+
+	return (
+		<div>
+			<Breadcrumb
+				fontWeight="medium"
+				fontSize="sm"
+				separator={<ChevronRightIcon color="gray.500" />}
+			>
+				{arrayOfBreadCrumbData.map((breadCrumb: IBreadCrumbHeader, index) => {
+					return (
+						<BreadcrumbItem>
+							<NavLink to={breadCrumb.path}>{breadCrumb.name}</NavLink>
+						</BreadcrumbItem>
+					);
+				})}
+			</Breadcrumb>
+			<Divider marginY="10px" />
+		</div>
+	);
+};
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 	return (

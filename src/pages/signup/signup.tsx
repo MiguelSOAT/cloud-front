@@ -53,7 +53,7 @@ export default function SignupCard() {
 			username: username,
 			password: password
 		};
-		console.log(payload);
+
 		const response: Response = await fetch('/api/v1/signup', {
 			method: 'POST',
 			headers: {
@@ -71,8 +71,6 @@ export default function SignupCard() {
 			localStorage.setItem('username', username);
 			navigate('/');
 		} else {
-			console.log('Error');
-			console.log(json);
 			formProps.setFieldError('authentication', json.message);
 		}
 	}

@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Telegram from '../pages/telegram/telegram';
 
 const AllRoutes = () => {
 	const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ const AllRoutes = () => {
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				// ignore error
 			});
 	};
 
@@ -70,10 +71,11 @@ const AllRoutes = () => {
 				) : (
 					<Routes>
 						<Route path="/" element={<Home />} />
-						<Route path="/settings" element={<Settings />} />
 						<Route path="/explore" element={<Files />} />
 						<Route path="/signup" element={<Signup />} />
 						<Route path="/login" element={<Login />} />
+						<Route path="/settings" element={<Settings />} />
+						<Route path="/settings/telegram" element={<Telegram />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				)}

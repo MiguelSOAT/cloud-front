@@ -59,7 +59,6 @@ export default function SignupCard() {
 			localStorage.setItem('username', username);
 			navigate('/');
 		} else {
-			console.log('Error');
 			formProps.setFieldError('authentication', 'Invalid username or password');
 		}
 	}

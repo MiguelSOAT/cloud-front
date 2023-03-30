@@ -1,10 +1,27 @@
-import { Button, Card, CardBody, CardFooter, Heading, Stack, Text, Image } from '@chakra-ui/react';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardFooter,
+	Heading,
+	Stack,
+	Text,
+	Image,
+	useColorModeValue
+} from '@chakra-ui/react';
 import Header from '../../template/header/header';
+import { FiSend } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 
 function Settings() {
 	return (
 		<Header>
-			<Card direction={{ base: 'column', sm: 'row' }} overflow="hidden" variant="outline">
+			<Card
+				direction={{ base: 'column', sm: 'row' }}
+				overflow="hidden"
+				variant="outline"
+				bg={useColorModeValue('white', 'gray.900')}
+			>
 				<Image
 					objectFit="cover"
 					maxW={{ base: '100%', sm: '200px' }}
@@ -13,17 +30,15 @@ function Settings() {
 				/>
 
 				<Stack>
-					<CardBody>
+					<CardBody alignContent="center">
 						<Heading size="md">Telegram</Heading>
 
-						<Text py="2">
-							To be able to synchronize files, you need to set your telegram account.
-						</Text>
+						<Text py="2">Easily sync files from telegram</Text>
 					</CardBody>
 
 					<CardFooter>
-						<Button variant="solid" colorScheme="blue">
-							Buy Latte
+						<Button variant="solid" colorScheme="telegram" leftIcon={<FiSend />}>
+							<Link to={'/settings/telegram'}>Configurate</Link>
 						</Button>
 					</CardFooter>
 				</Stack>
