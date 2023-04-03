@@ -7,7 +7,6 @@ import NotFound from '../pages/not-found/not-found';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Telegram from '../pages/telegram/telegram';
 
 const AllRoutes = () => {

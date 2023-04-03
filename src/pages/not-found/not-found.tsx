@@ -1,19 +1,4 @@
-import {
-	Flex,
-	Box,
-	FormControl,
-	FormLabel,
-	Input,
-	InputGroup,
-	InputRightElement,
-	Stack,
-	Button,
-	Heading,
-	Text,
-	useColorModeValue,
-	Link
-} from '@chakra-ui/react';
-import { useState } from 'react';
+import { Flex, useColorModeValue } from '@chakra-ui/react';
 import Lottie from 'lottie-react';
 import Header from '../../template/header/header';
 

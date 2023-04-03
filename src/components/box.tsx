@@ -1,6 +1,5 @@
 import { Badge, Box } from '@chakra-ui/layout';
 import { Image } from '@chakra-ui/react';
-import { StarIcon } from '@chakra-ui/icons';
 
 interface imageProps {
 	imageUrl: string;

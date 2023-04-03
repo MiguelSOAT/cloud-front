@@ -25,18 +25,6 @@ export default function SignupCard() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [confirmPassword, setConfirmPassword] = useState('');
-
-	const handleUsernameChange = (e: any) => setUsername(e.target.value);
-	const handlePasswordChange = (e: any) => setPassword(e.target.value);
-	const handleConfirmPasswordChange = (e: any) => setConfirmPassword(e.target.value);
-
-	const isUsernameError = username === '';
-	const isPasswordError = password === '';
-	const isConfirmPasswordError = confirmPassword === '';
-
 	const navigate = useNavigate();
 
 	const {
@@ -97,7 +85,7 @@ export default function SignupCard() {
 
 	function validatePasswordConfirm(pass: string, value: string) {
 		let error;
-		if (pass != value) {
+		if (pass !== value) {
 			error = 'Password and confirm password doesnt match';
 		}
 		return error;

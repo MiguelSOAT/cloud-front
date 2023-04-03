@@ -22,9 +22,12 @@ import { useState } from 'react';
 import Header from '../../template/header/header';
 
 function Telegram() {
+	const [telegramId, setTelegramId] = useState('');
+	const [securityToken, setSecurityToken] = useState('');
+
 	const [hasData, setHasData] = useState(false);
 
-	function validateTelegramAccountId(value: string) {
+	function validateTelegramId(value: string) {
 		let error;
 		if (!value) {
 			error = 'Telegram ID is required';
@@ -39,6 +42,50 @@ function Telegram() {
 		}
 		return error;
 	}
+
+	const getCredentials = () => {
+		fetch('/api/v1/user/telegram', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}, // *GET, POST, PUT, DELETE, etc.
+			mode: 'cors', // no-cors, *cors, same-origin
+			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: 'same-origin', // include, *same-origin, omit
+			referrerPolicy: 'no-referrer'
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				setTelegramId(data.telegramId);
+				setSecurityToken(data.securityToken);
+				if (data.telegramId !== '' && data.securityToken !== '') {
+					setHasData(true);
+				}
+			});
+	};
+
+	const postCredentials = () => {
+		fetch('/api/v1/user/telegram', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			}, // *GET, POST, PUT, DELETE, etc.
+			mode: 'cors', // no-cors, *cors, same-origin
+			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: 'same-origin', // include, *same-origin, omit
+			referrerPolicy: 'no-referrer',
+			body: JSON.stringify({
+				telegramId: 'telegramId',
+				securityToken: 'securityToken'
+			})
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data);
+			});
+	};
+
+	getCredentials();
 
 	return (
 		<Header>
@@ -71,31 +118,33 @@ function Telegram() {
 						<CardBody>
 							<Formik
 								initialValues={{
-									telegramAccountId: '',
-									securityToken: ''
+									telegramId: telegramId,
+									securityToken: securityToken
 								}}
 								onSubmit={(values, actions) => {
 									setTimeout(() => {
 										alert(JSON.stringify(values, null, 2));
+										postCredentials();
 										actions.setSubmitting(false);
 									}, 1000);
 								}}
+								enableReinitialize={true}
 							>
 								{(props) => (
 									<Form>
-										<FormControl id="telegramAccountId" isRequired>
-											<Field name="telegramAccountId" validate={validateTelegramAccountId}>
+										<FormControl id="telegramId" isRequired>
+											<Field name="telegramId" validate={validateTelegramId}>
 												{(formikObject: any) => (
 													<FormControl
 														isInvalid={
-															formikObject.form.errors.telegramAccountId &&
-															formikObject.form.touched.telegramAccountId
+															formikObject.form.errors.telegramId &&
+															formikObject.form.touched.telegramId
 														}
 													>
 														<FormLabel>Telegram ID</FormLabel>
 														<Input {...formikObject.field} type="text" />
 														<FormErrorMessage>
-															{formikObject.form.errors.telegramAccountId}
+															{formikObject.form.errors.telegramId}
 														</FormErrorMessage>
 														<FormHelperText>ID of your telegram account</FormHelperText>
 													</FormControl>

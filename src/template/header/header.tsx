@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { Link as RouterLink, NavLink } from 'react-router-dom';
 import {
 	IconButton,
@@ -19,27 +19,18 @@ import {
 	FlexProps,
 	Menu,
 	MenuButton,
-	MenuDivider,
 	MenuItem,
 	MenuList,
 	Breadcrumb,
 	BreadcrumbItem,
-	BreadcrumbLink,
-	Divider
+	Divider,
+	Image
 } from '@chakra-ui/react';
-import {
-	FiHome,
-	FiTrendingUp,
-	FiCompass,
-	FiStar,
-	FiSettings,
-	FiMenu,
-	FiBell,
-	FiChevronDown
-} from 'react-icons/fi';
+import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
+import simpleLogo from '../../assets/images/simple-logo.png';
 
 interface LinkItemProps {
 	name: string;
@@ -155,6 +146,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 				<Box bg="tomato" height="80px"></Box>
 			</SimpleGrid> */}
 			<Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+				<Image src={simpleLogo}></Image>
 				<Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
 					MiguelSOAT
 				</Text>
