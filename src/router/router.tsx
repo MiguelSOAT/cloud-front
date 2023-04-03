@@ -7,7 +7,7 @@ import NotFound from '../pages/not-found/not-found';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import Telegram from '../pages/telegram/telegram';
+import Telegram from '../pages/settings/telegram/telegram';
 
 const AllRoutes = () => {
 	const [loading, setLoading] = useState(true);

@@ -30,8 +30,7 @@ import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 're
 import { IconType } from 'react-icons';
 import { ReactText } from 'react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
-import simpleLogo from '../../assets/images/simple-logo.png';
-
+import simpleLogo from '../../assets/miguelsoat/logotipo-noBG.png';
 interface LinkItemProps {
 	name: string;
 	icon: IconType;
@@ -146,10 +145,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 				<Box bg="tomato" height="80px"></Box>
 			</SimpleGrid> */}
 			<Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-				<Image src={simpleLogo}></Image>
-				<Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-					MiguelSOAT
-				</Text>
+				<Image boxSize="100%" objectFit="cover" src={simpleLogo}></Image>{' '}
 				<CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
 			</Flex>
 			{LinkItems.map((link) => (
@@ -229,14 +225,12 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 				icon={<FiMenu />}
 			/>
 
-			<Text
+			<Image
 				display={{ base: 'flex', md: 'none' }}
-				fontSize="2xl"
-				fontFamily="monospace"
-				fontWeight="bold"
-			>
-				MiguelSOAT
-			</Text>
+				boxSize="50%"
+				objectFit="cover"
+				src={simpleLogo}
+			></Image>
 
 			<HStack spacing={{ base: '0', md: '6' }}>
 				<IconButton size="lg" variant="ghost" aria-label="open menu" icon={<FiBell />} />
@@ -244,12 +238,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 					<Menu>
 						<MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
 							<HStack>
-								<Avatar
-									size={'sm'}
-									// src={
-									// 	'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
-									// }
-								/>
+								<Avatar size={'sm'} />
 								<VStack
 									display={{ base: 'none', md: 'flex' }}
 									alignItems="flex-start"
