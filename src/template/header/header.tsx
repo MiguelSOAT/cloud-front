@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, ReactText } from 'react';
 import { Link as RouterLink, NavLink } from 'react-router-dom';
 import {
 	IconButton,
@@ -28,7 +28,6 @@ import {
 } from '@chakra-ui/react';
 import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 import { IconType } from 'react-icons';
-import { ReactText } from 'react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import simpleLogo from '../../assets/miguelsoat/logotipo-noBG.png';
 interface LinkItemProps {
@@ -112,7 +111,7 @@ const DinamycBreadCrumb = () => {
 			>
 				{arrayOfBreadCrumbData.map((breadCrumb: IBreadCrumbHeader, index) => {
 					return (
-						<BreadcrumbItem>
+						<BreadcrumbItem key={index}>
 							<NavLink to={breadCrumb.path}>{breadCrumb.name}</NavLink>
 						</BreadcrumbItem>
 					);
@@ -135,17 +134,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 			h="full"
 			{...rest}
 		>
-			{/* <SimpleGrid columns={1} spacingX="0px" spacingY="10px">
-				<Box bg="tomato" height="80px">
-				
-				</Box>
-				<Box bg="tomato" height="80px"></Box>
-				<Box bg="tomato" height="80px"></Box>
-				<Box bg="tomato" height="80px"></Box>
-				<Box bg="tomato" height="80px"></Box>
-			</SimpleGrid> */}
 			<Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-				<Image boxSize="100%" objectFit="cover" src={simpleLogo}></Image>{' '}
+				<Image
+					display={'flex'}
+					maxH={{ base: '300px', md: 'flex' }}
+					objectFit="cover"
+					src={simpleLogo}
+				></Image>{' '}
 				<CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
 			</Flex>
 			{LinkItems.map((link) => (
@@ -227,8 +222,9 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 
 			<Image
 				display={{ base: 'flex', md: 'none' }}
-				boxSize="50%"
+				maxInlineSize={{ base: '200px', md: 'none' }}
 				objectFit="cover"
+				overflow={'hidden'}
 				src={simpleLogo}
 			></Image>
 
@@ -259,10 +255,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 							bg={useColorModeValue('white', 'gray.900')}
 							borderColor={useColorModeValue('gray.200', 'gray.700')}
 						>
-							{/* <MenuItem>Profile</MenuItem>
-							<MenuItem>Settings</MenuItem>
-							<MenuItem>Billing</MenuItem> */}
-							{/* <MenuDivider /> */}
 							<MenuItem
 								onClick={() => {
 									fetch('/api/v1/logout', {

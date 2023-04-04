@@ -24,6 +24,7 @@ import Header from '../../../template/header/header';
 function Telegram() {
 	const [telegramId, setTelegramId] = useState('');
 	const [securityToken, setSecurityToken] = useState('');
+	const [firstLoad, setFirstLoad] = useState(true);
 
 	const [hasData, setHasData] = useState(false);
 
@@ -49,10 +50,10 @@ function Telegram() {
 			headers: {
 				'Content-Type': 'application/json'
 			}, // *GET, POST, PUT, DELETE, etc.
-			mode: 'cors', // no-cors, *cors, same-origin
+			mode: 'same-origin', // no-cors, *cors, same-origin
 			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-			credentials: 'same-origin', // include, *same-origin, omit
-			referrerPolicy: 'no-referrer'
+			credentials: 'same-origin',
+			redirect: 'follow'
 		})
 			.then((response) => response.json())
 			.then((data) => {
@@ -64,28 +65,30 @@ function Telegram() {
 			});
 	};
 
-	const postCredentials = () => {
+	const postCredentials = (values: any, actions: any) => {
 		fetch('/api/v1/user/telegram', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			}, // *GET, POST, PUT, DELETE, etc.
-			mode: 'cors', // no-cors, *cors, same-origin
+			mode: 'same-origin', // no-cors, *cors, same-origin
 			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-			credentials: 'same-origin', // include, *same-origin, omit
-			referrerPolicy: 'no-referrer',
+			credentials: 'same-origin',
+			redirect: 'follow',
 			body: JSON.stringify({
-				telegramId: 'telegramId',
-				securityToken: 'securityToken'
+				telegramId: values.telegramId,
+				securityToken: values.securityToken
 			})
-		})
-			.then((response) => response.json())
-			.then((data) => {
-				console.log(data);
-			});
+		}).then((response) => {
+			actions.setSubmitting(false);
+			setHasData(true);
+		});
 	};
 
-	getCredentials();
+	if (firstLoad) {
+		getCredentials();
+		setFirstLoad(false);
+	}
 
 	return (
 		<Header>
@@ -122,11 +125,7 @@ function Telegram() {
 									securityToken: securityToken
 								}}
 								onSubmit={(values, actions) => {
-									setTimeout(() => {
-										alert(JSON.stringify(values, null, 2));
-										postCredentials();
-										actions.setSubmitting(false);
-									}, 1000);
+									postCredentials(values, actions);
 								}}
 								enableReinitialize={true}
 							>

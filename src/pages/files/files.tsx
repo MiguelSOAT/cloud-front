@@ -1,9 +1,10 @@
-import React from 'react';
 import ImageBox from '../../components/box';
 import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import Header from '../../template/header/header';
+import { Component, useState } from 'react';
+import ModalCarrousel from '../../components/modal-carrousel/modal-carrousel';
 interface status {
 	items: JSX.Element[];
 }
@@ -12,31 +13,45 @@ interface image {
 	file_name: string;
 	file_base64: string;
 	extension: string;
+	hasPreview: boolean;
+	fileId: number;
 }
 
-class App extends React.Component {
+class App extends Component {
+	private isLoaded: boolean;
+	private currentPage: number;
+	private pages: number;
+	private pageSize: number;
+	private hasMoreData: boolean;
+
+	constructor(props: any) {
+		super(props);
+		this.isLoaded = false;
+		this.currentPage = 1;
+		this.pages = 0;
+		this.pageSize = 10;
+		this.hasMoreData = true;
+	}
+
 	getMoreImages(images: image[]) {
 		const array: JSX.Element[] = this.state ? this.state.items : [];
-		for (const image of images) {
-			array.push(this.getPhotoComponent(image));
+		for (const imageIndex in images) {
+			const image = images[imageIndex];
+			array.push(this.getPhotoComponent(image, parseInt(imageIndex)));
 		}
 
 		return array;
 	}
 
-	getPhotoComponent(image: image): JSX.Element {
+	getPhotoComponent(image: image, imageIndex: number): JSX.Element {
 		return (
 			<ImageBox
-				imageUrl="https://bit.ly/2Z4KKcF"
-				imageAlt="Rear view of modern home with pool"
-				beds={3}
-				baths={2}
+				imageAlt={image.file_name}
 				title={image.file_name}
-				formattedPrice="$1900.00"
-				reviewCount={34}
-				rating={4}
 				image={image.file_base64}
 				extension={image.extension}
+				hasPreview={image.hasPreview}
+				fileId={image.fileId}
 			></ImageBox>
 		);
 	}
@@ -46,15 +61,26 @@ class App extends React.Component {
 	};
 
 	fetchMoreData = async () => {
-		const response = await axios.get('/api/v1/files');
-		const images = await response.data.images;
-		this.setState({
-			items: this.getMoreImages(images)
-		});
+		try {
+			const response = await axios.get(
+				'/api/v1/files?page=' + this.currentPage + '&pageSize=' + this.pageSize
+			);
+			const images = await response.data.images;
+			this.currentPage += 1;
+			this.hasMoreData = images.length > 0;
+			if (!this.isLoaded) this.isLoaded = true;
+
+			this.setState({
+				items: this.getMoreImages(images)
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	render() {
-		if (this.state.items.length === 0) {
+		if (this.state.items.length === 0 && !this.isLoaded) {
+			this.isLoaded = true;
 			this.fetchMoreData();
 		}
 		return (
@@ -63,7 +89,7 @@ class App extends React.Component {
 					<InfiniteScroll
 						dataLength={this.state.items.length}
 						next={this.fetchMoreData}
-						hasMore={true}
+						hasMore={this.hasMoreData}
 						loader={<Spinner />}
 					>
 						<SimpleGrid columns={[2, 3, 4]} spacing={10}>
