@@ -15,6 +15,7 @@ interface image {
 	extension: string;
 	hasPreview: boolean;
 	fileId: number;
+	fileSize: number;
 }
 
 class App extends Component {
@@ -52,6 +53,7 @@ class App extends Component {
 				extension={image.extension}
 				hasPreview={image.hasPreview}
 				fileId={image.fileId}
+				fileSize={image.fileSize}
 			></ImageBox>
 		);
 	}

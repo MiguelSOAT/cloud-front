@@ -30,6 +30,7 @@ import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 're
 import { IconType } from 'react-icons';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 import simpleLogo from '../../assets/miguelsoat/logotipo-noBG.png';
+import FloatingUploadButton from '../../components/floating-upload-button/floating-upload-button';
 interface LinkItemProps {
 	name: string;
 	icon: IconType;
@@ -47,6 +48,7 @@ export default function SidebarWithHeader({ children }: { children: ReactNode })
 
 	return (
 		<Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+			<FloatingUploadButton />
 			<SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
 			<Drawer
 				autoFocus={false}

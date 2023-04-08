@@ -30,6 +30,7 @@ interface imageProps {
 	extension: string;
 	hasPreview: boolean;
 	fileId: number;
+	fileSize: number;
 }
 function ImageBox(property: imageProps) {
 	const imageSrc = `data:image/png;base64,${property.image}`;
@@ -222,7 +223,8 @@ function ImageBox(property: imageProps) {
 				<Center
 					flex="1"
 					minH={'200px'}
-					margin={'10%'}
+					margin={'5%'}
+					marginTop={'10%'}
 					onClick={onOpen}
 					cursor={'pointer'}
 					className={isHovered ? 'hover-effect' : ''}
@@ -231,12 +233,26 @@ function ImageBox(property: imageProps) {
 				>
 					{flexPreview}
 				</Center>
-				<Center flex="1" fontWeight="semibold" color={'blackAlpha.900'} noOfLines={1}>
+				{/* <Center flex="1" fontWeight="semibold" color={'blackAlpha.900'} noOfLines={1}>
 					{property.title}
-				</Center>
-				<Badge margin={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
-					{property.extension}
-				</Badge>
+				</Center> */}
+				<Flex color="white" flexDirection={'row-reverse'} marginY={'5px'}>
+					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
+						{property.extension}
+					</Badge>
+					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="gray">
+						{(property.fileSize * 1e-6).toPrecision(2)}MB
+					</Badge>
+					<Badge
+						marginX={'5px'}
+						w={'fit-content'}
+						borderRadius="full"
+						px="2"
+						colorScheme="telegram"
+					>
+						Telegram
+					</Badge>
+				</Flex>
 			</Flex>
 		</Box>
 	);
