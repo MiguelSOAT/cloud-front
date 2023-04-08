@@ -1,10 +1,10 @@
-import ImageBox from '../../components/box';
+import ImageBox from '../../components/image-box/image-box';
 import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import Header from '../../template/header/header';
 import { Component, useState } from 'react';
-import ModalCarrousel from '../../components/modal-carrousel/modal-carrousel';
+
 interface status {
 	items: JSX.Element[];
 }

@@ -15,11 +15,14 @@ import {
 	ToastProps,
 	VStack,
 	useDisclosure,
-	useToast
+	useToast,
+	useColorModeValue
 } from '@chakra-ui/react';
 import { Text } from '@chakra-ui/react';
-import { DownloadIcon } from '@chakra-ui/icons';
+import { DownloadIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useRef, useState } from 'react';
+import { saveAs } from 'file-saver';
+import './image-box.css';
 interface imageProps {
 	imageAlt: string;
 	title: string;
@@ -28,33 +31,45 @@ interface imageProps {
 	hasPreview: boolean;
 	fileId: number;
 }
-
 function ImageBox(property: imageProps) {
 	const imageSrc = `data:image/png;base64,${property.image}`;
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const [progress, setProgress] = useState(0);
 	const toast = useToast();
 	const toastIdRef = useRef<string | number | undefined>();
+	const charToastLength = 15;
+	const [isHovered, setIsHovered] = useState(false);
 
-	function downloadToast(percentage: number) {
+	function downloadToast(percentage: number, isFinished: boolean = false) {
 		return (
-			<Box bg={'blue.600'} borderRadius={'5px'} padding={'10px'}>
+			<Flex bg={'whiteAlpha.900'} borderRadius={'5px'} padding={'10px'} direction={'row'}>
 				<CircularProgress value={percentage} color="green.400">
 					<CircularProgressLabel>
-						<DownloadIcon />
+						{isFinished ? (
+							<CheckIcon alignContent={'center'} color={'green.400'} w={4} h={5} />
+						) : (
+							<DownloadIcon />
+						)}
 					</CircularProgressLabel>
 				</CircularProgress>
-			</Box>
+
+				<Center marginLeft={'auto'} overflow={'hidden'} textAlign={'center'}>
+					{property.title.length > charToastLength && '...'}
+					{property.title.slice(property.title.length - charToastLength)}
+				</Center>
+			</Flex>
 		);
 	}
 
 	function update(percentage: number) {
 		if (toastIdRef.current) {
+			const isFinished = percentage === 100;
+			const finishedDelay = 3000;
 			toast.update(toastIdRef.current, {
 				description: percentage,
 				position: 'bottom-right',
-				duration: percentage === 100 ? 5000 : null,
-				render: () => downloadToast(percentage)
+				duration: isFinished ? finishedDelay : null,
+				render: () => downloadToast(percentage, isFinished)
 			});
 		}
 	}
@@ -69,7 +84,7 @@ function ImageBox(property: imageProps) {
 	}
 
 	const noPreviewText = (
-		<VStack>
+		<VStack bg={'gray.700'} padding={'20px'} borderRadius={'full'} color={'white'}>
 			<Text display="flex" fontSize={20} fontWeight="bold">
 				{property.extension}
 			</Text>
@@ -122,14 +137,21 @@ function ImageBox(property: imageProps) {
 		handleDownload(response);
 	};
 
+	const deleteFile = async () => {
+		alert('TODO Delete');
+	};
+
 	const handleDownload = async (response: any) => {
 		if (response.ok) {
 			const contentLength = response.headers.get('Content-Length');
+			const contentType = response.headers.get('content-type');
 			if (contentLength) {
 				const total = parseInt(contentLength, 10);
 				let loaded = 0;
 
-				const reader = response.body?.getReader();
+				const readableStream = response.body;
+				const reader = readableStream?.getReader();
+				const chunks = [];
 				if (!reader) return;
 				while (true) {
 					const { done, value } = await reader.read();
@@ -137,8 +159,13 @@ function ImageBox(property: imageProps) {
 					loaded += value.length;
 					setProgress((loaded / total) * 100);
 					update((loaded / total) * 100);
-					console.log('Progress: ' + (loaded / total) * 100 + '%' + ' ' + loaded + '/' + total);
+					chunks.push(value);
 				}
+				const blob = new Blob(chunks, { type: contentType });
+				console.log(blob);
+				saveAs(blob, property.title, {
+					autoBom: false
+				});
 			}
 		} else {
 			console.error('Download failed');
@@ -146,14 +173,7 @@ function ImageBox(property: imageProps) {
 	};
 
 	return (
-		<Box
-			maxW="sm"
-			borderWidth="1px"
-			borderRadius="lg"
-			overflow="hidden"
-			background="blackAlpha.300"
-			h={'fit-content'}
-		>
+		<Box maxW="sm" borderWidth="1px" borderRadius="lg" background={'white'} h={'fit-content'}>
 			<Modal isOpen={isOpen} onClose={onClose} isCentered>
 				<ModalOverlay bg="none" backdropFilter="auto" backdropInvert="25%" backdropBlur="2px" />
 				<ModalContent>
@@ -165,12 +185,50 @@ function ImageBox(property: imageProps) {
 						</Center>
 					</ModalBody>
 					<ModalFooter>
-						<DownloadIcon onClick={downloadFile} />
+						<Badge
+							margin={'5px'}
+							w={'fit-content'}
+							borderRadius="full"
+							colorScheme="green"
+							variant="solid"
+							padding={'5px'}
+							paddingLeft={'10px'}
+							paddingRight={'10px'}
+							fontSize={'12px'}
+							cursor={'pointer'}
+							onClick={downloadFile}
+						>
+							<DownloadIcon /> Download
+						</Badge>
+						<Badge
+							margin={'5px'}
+							w={'fit-content'}
+							borderRadius="full"
+							colorScheme="red"
+							variant="solid"
+							padding={'5px'}
+							paddingLeft={'10px'}
+							paddingRight={'10px'}
+							fontSize={'12px'}
+							cursor={'pointer'}
+							onClick={deleteFile}
+						>
+							<DeleteIcon /> Delete
+						</Badge>
 					</ModalFooter>
 				</ModalContent>
 			</Modal>
 			<Flex color="white" flexDirection={'column'}>
-				<Center flex="1" minH={'200px'} margin={'2px'} onClick={onOpen}>
+				<Center
+					flex="1"
+					minH={'200px'}
+					margin={'10%'}
+					onClick={onOpen}
+					cursor={'pointer'}
+					className={isHovered ? 'hover-effect' : ''}
+					onMouseEnter={() => setIsHovered(true)}
+					onMouseLeave={() => setIsHovered(false)}
+				>
 					{flexPreview}
 				</Center>
 				<Center flex="1" fontWeight="semibold" color={'blackAlpha.900'} noOfLines={1}>
