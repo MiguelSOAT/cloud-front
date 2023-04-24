@@ -3,7 +3,7 @@ import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import Header from '../../template/header/header';
-import { Component, useState } from 'react';
+import { Component, MouseEventHandler, useState } from 'react';
 
 interface status {
 	items: JSX.Element[];
@@ -16,6 +16,7 @@ interface image {
 	hasPreview: boolean;
 	fileId: number;
 	fileSize: number;
+	origin: string;
 }
 
 class App extends Component {
@@ -24,6 +25,9 @@ class App extends Component {
 	private pages: number;
 	private pageSize: number;
 	private hasMoreData: boolean;
+	public state: status = {
+		items: []
+	};
 
 	constructor(props: any) {
 		super(props);
@@ -33,6 +37,17 @@ class App extends Component {
 		this.pageSize = 10;
 		this.hasMoreData = true;
 	}
+
+	handleDelete = (fileId: number) => {
+		for (const index in this.state.items) {
+			const imageBox = this.state.items[index];
+			if (imageBox.key === fileId.toString()) {
+				this.state.items.splice(parseInt(index), 1);
+				this.setState({ items: this.state.items });
+				break;
+			}
+		}
+	};
 
 	getMoreImages(images: image[]) {
 		const array: JSX.Element[] = this.state ? this.state.items : [];
@@ -54,13 +69,12 @@ class App extends Component {
 				hasPreview={image.hasPreview}
 				fileId={image.fileId}
 				fileSize={image.fileSize}
+				onDelete={this.handleDelete}
+				key={image.fileId}
+				origin={image.origin}
 			></ImageBox>
 		);
 	}
-
-	state: status = {
-		items: []
-	};
 
 	fetchMoreData = async () => {
 		try {
@@ -69,7 +83,7 @@ class App extends Component {
 			);
 			const images = await response.data.images;
 			this.currentPage += 1;
-			this.hasMoreData = images.length > 0;
+			this.hasMoreData = images.length === this.pageSize;
 			if (!this.isLoaded) this.isLoaded = true;
 
 			this.setState({
@@ -81,7 +95,10 @@ class App extends Component {
 	};
 
 	render() {
-		if (this.state.items.length === 0 && !this.isLoaded) {
+		if (
+			(this.state.items.length === 0 || this.state.items.length < this.pageSize) &&
+			!this.isLoaded
+		) {
 			this.isLoaded = true;
 			this.fetchMoreData();
 		}

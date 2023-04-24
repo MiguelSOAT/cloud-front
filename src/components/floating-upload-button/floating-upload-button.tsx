@@ -26,7 +26,7 @@ const FloatingUploadButton: React.FC = () => {
 			formData.append('file', fileInputRef.current.files[0]);
 
 			try {
-				const response = await fetch('/api/upload', {
+				const response = await fetch('/api/v1/files', {
 					method: 'POST',
 					body: formData
 				});
@@ -50,6 +50,7 @@ const FloatingUploadButton: React.FC = () => {
 			bg="transparent"
 			color="white"
 			transform="scaleY(-1)"
+			zIndex={100}
 		>
 			<form>
 				<IconButton

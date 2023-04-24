@@ -16,11 +16,12 @@ import {
 	VStack,
 	useDisclosure,
 	useToast,
-	useColorModeValue
+	useColorModeValue,
+	Button
 } from '@chakra-ui/react';
 import { Text } from '@chakra-ui/react';
 import { DownloadIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
-import { useRef, useState } from 'react';
+import { MouseEventHandler, useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
 import './image-box.css';
 interface imageProps {
@@ -31,6 +32,8 @@ interface imageProps {
 	hasPreview: boolean;
 	fileId: number;
 	fileSize: number;
+	onDelete: (fileId: number) => void;
+	origin: string;
 }
 function ImageBox(property: imageProps) {
 	const imageSrc = `data:image/png;base64,${property.image}`;
@@ -68,19 +71,29 @@ function ImageBox(property: imageProps) {
 			const finishedDelay = 3000;
 			toast.update(toastIdRef.current, {
 				description: percentage,
-				position: 'bottom-right',
+				position: 'bottom-left',
 				duration: isFinished ? finishedDelay : null,
 				render: () => downloadToast(percentage, isFinished)
 			});
 		}
 	}
 
-	function addToast() {
+	function addDownloadToast() {
 		toastIdRef.current = toast({
 			description: '0',
-			position: 'bottom-right',
+			position: 'bottom-left',
 			duration: null,
 			render: () => downloadToast(10)
+		});
+	}
+
+	function addDeleteToast() {
+		toastIdRef.current = toast({
+			position: 'bottom-left',
+			duration: 2000,
+			title: 'File deleted',
+			status: 'success',
+			isClosable: true
 		});
 	}
 
@@ -123,7 +136,7 @@ function ImageBox(property: imageProps) {
 	);
 
 	const downloadFile = async () => {
-		addToast();
+		addDownloadToast();
 		const response = await fetch(`/api/v1/file?id=${property.fileId}`, {
 			method: 'GET',
 			headers: {
@@ -138,8 +151,25 @@ function ImageBox(property: imageProps) {
 		handleDownload(response);
 	};
 
-	const deleteFile = async () => {
-		alert('TODO Delete');
+	const deleteFile = () => {
+		fetch(`/api/v1/file?id=${property.fileId}`, {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			}, // *GET, POST, PUT, DELETE, etc.
+			mode: 'same-origin', // no-cors, *cors, same-origin
+			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+			credentials: 'same-origin',
+			redirect: 'follow'
+		})
+			.then((res) => {
+				addDeleteToast();
+				onClose();
+				property.onDelete(property.fileId);
+			})
+			.catch(() => {
+				// window.location.reload();
+			});
 	};
 
 	const handleDownload = async (response: any) => {
@@ -233,9 +263,6 @@ function ImageBox(property: imageProps) {
 				>
 					{flexPreview}
 				</Center>
-				{/* <Center flex="1" fontWeight="semibold" color={'blackAlpha.900'} noOfLines={1}>
-					{property.title}
-				</Center> */}
 				<Flex color="white" flexDirection={'row-reverse'} marginY={'5px'}>
 					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
 						{property.extension}
@@ -250,7 +277,7 @@ function ImageBox(property: imageProps) {
 						px="2"
 						colorScheme="telegram"
 					>
-						Telegram
+						{property.origin}
 					</Badge>
 				</Flex>
 			</Flex>
