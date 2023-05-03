@@ -228,7 +228,7 @@ export default function SignupCard() {
 												bg={'blue.400'}
 												color={'white'}
 												_hover={{
-													bg: 'blue.500'
+													bg: '0000FF'
 												}}
 												type="submit"
 												isLoading={isSubmitting}

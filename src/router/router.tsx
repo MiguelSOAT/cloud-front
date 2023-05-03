@@ -32,32 +32,29 @@ const AllRoutes = () => {
 
 	const checkIfUserIsAuthorized = async () => {
 		fetch(`/api/v1/authenticate`, {
-			method: 'POST',
+			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			mode: 'same-origin', // no-cors, *cors, same-origin
 			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
 			credentials: 'same-origin', // include, *same-origin, omit
-			redirect: 'manual'
+			redirect: 'follow'
 		})
-			.then((response) => {
-				const isAuthorized = response.status === 200;
-				if (isAuthorized) {
-					setLoading(false);
-				} else {
-					window.location.href = '/login';
+			.then((res) => {
+				if (res.redirected) {
+					window.location.href = res.url; // follow the redirect manually
 				}
 			})
-			.catch((error) => {
-				// ignore error
+			.catch(() => {
+				window.location.pathname = '/login';
 			});
 	};
 
 	const loadingSpinner = () => {
 		return (
 			<Center height="100vh" bg="white">
-				<Spinner size="xl" color="blue.500" />
+				<Spinner size="xl" color="0000FF" />
 			</Center>
 		);
 	};

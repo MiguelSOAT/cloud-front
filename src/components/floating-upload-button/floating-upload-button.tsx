@@ -58,11 +58,17 @@ const FloatingUploadButton: React.FC = () => {
 					h={16}
 					w={16}
 					borderRadius={'full'}
-					colorScheme="teal"
-					aria-label="Send email"
-					icon={<DownloadIcon />}
+					background="radial-gradient(circle at center, #32E875 0%, #2BBB60 100%)"
+					borderColor={'#000000'} // Cambiar el color del borde a negro
+					aria-label="Upload file"
+					icon={<DownloadIcon boxSize={6} />} // Ajustar el tamaño del icono
 					onClick={handleButtonClick}
+					_hover={{
+						background: 'radial-gradient(circle at center, #2BBB60 0%, #32E875 100%)' // Ajustar la saturación del gradiente al pasar el mouse
+					}}
+					boxShadow={'md'}
 				/>
+
 				<input
 					type="file"
 					ref={fileInputRef}
