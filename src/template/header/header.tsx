@@ -29,7 +29,7 @@ import {
 import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ChevronRightIcon } from '@chakra-ui/icons';
-import simpleLogo from '../../assets/miguelsoat/logotipo-noBG.png';
+import simpleLogo from '../../assets/miguelsoat/logotipo-noBG-white-enh.png';
 import FloatingUploadButton from '../../components/floating-upload-button/floating-upload-button';
 interface LinkItemProps {
 	name: string;
@@ -134,6 +134,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 			w={{ base: 'full', md: 60 }}
 			pos="fixed"
 			h="full"
+			backgroundColor={'#1e1e1e'}
 			{...rest}
 		>
 			<Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
@@ -148,13 +149,14 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 			{LinkItems.map((link) => (
 				<NavItem
 					_hover={{
-						bg: '#0000ff',
+						bg: '#1a51fb',
 						color: 'white'
 					}}
 					onClose={onClose}
 					key={link.name}
 					icon={link.icon}
 					path={link.path || '/'}
+					color={'white'}
 				>
 					{link.name}
 				</NavItem>

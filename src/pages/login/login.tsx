@@ -27,15 +27,13 @@ import cloudAnimation from '../../assets/lottie/login-cloud.json';
 // import bigDataAnimation from '../../assets/lottie/login-big-data.json';
 import Lottie from 'lottie-react';
 import simpleLogo from '../../assets/miguelsoat/logotipo-noBG-croped-mini.png';
-
+import Typewriter from 'typewriter-effect';
 export default function SignupCard() {
 	const [showPassword, setShowPassword] = useState(false);
 
 	const navigate = useNavigate();
 
 	const {
-		handleSubmit,
-		register,
 		formState: { errors, isSubmitting }
 	} = useForm();
 
@@ -98,8 +96,8 @@ export default function SignupCard() {
 				objectFit="cover"
 				src={simpleLogo}
 				position={'fixed'}
-				top={'5px'}
-				left={'5px'}
+				top={'10px'}
+				left={'10px'}
 			></Image>
 			<Grid
 				templateColumns={{ md: '3fr 5fr' }}
@@ -109,20 +107,29 @@ export default function SignupCard() {
 			>
 				<Stack
 					spacing={8}
-					maxW={'lg'}
+					minH={'60vh'}
+					maxH={'70vh'}
 					py={12}
 					px={6}
 					m={'auto'}
 					display={{ base: 'none', md: 'block' }}
+					align={'center'}
 				>
-					<Stack align={'center'}>
-						<Heading fontSize={'4xl'} textAlign={'center'}>
-							Secure. Reliable. Professional. Versatile. Your cloud solution.
-						</Heading>
-						<Text fontSize={'lg'} color={'gray.600'}>
-							Discover the new way of storing your data in the cloud.
-						</Text>
-					</Stack>
+					<Heading fontSize={'4xl'} textAlign={'center'}>
+						<Typewriter
+							options={{
+								strings: ['Secure.', 'Reliable.', 'Professional.', 'Versatile.'],
+								autoStart: true,
+								loop: true
+							}}
+						/>
+					</Heading>
+					<Text fontSize={'xl'} fontWeight={500} color={'gray.600'} style={{ marginTop: '0px' }}>
+						Your cloud solution.
+					</Text>
+					<Text fontSize={'md'} color={'gray.600'}>
+						Discover the new way of storing your data.
+					</Text>
 					<Lottie animationData={cloudAnimation} />;
 				</Stack>
 				<Stack spacing={8} py={12} px={'auto'} minH={'100vh'} backgroundColor={'white'}>
