@@ -30,7 +30,7 @@ import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 're
 import { IconType } from 'react-icons';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 // import simpleLogo from '../../assets/miguelsoat/logo-white-mini.svg';
-import FloatingUploadButton from '../../components/floating-upload-button/floating-upload-button';
+import FloatingUploadButton from '../floating-upload-button/floating-upload-button';
 interface LinkItemProps {
 	name: string;
 	icon: IconType;

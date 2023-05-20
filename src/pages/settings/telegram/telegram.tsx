@@ -21,7 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import { useState } from 'react';
-import Header from '../../../template/header/header';
+import Header from '../../../components/header/header';
 
 function Telegram() {
 	const [telegramId, setTelegramId] = useState('');

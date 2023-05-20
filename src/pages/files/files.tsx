@@ -2,7 +2,7 @@ import ImageBox from '../../components/image-box/image-box';
 import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
-import Header from '../../template/header/header';
+import Header from '../../components/header/header';
 import { Component, MouseEventHandler, useState } from 'react';
 
 interface status {

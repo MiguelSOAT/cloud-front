@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import Lottie from 'lottie-react';
-import Header from '../../template/header/header';
+import Header from '../../components/header/header';
 
 export default function SignupCard() {
 	return (

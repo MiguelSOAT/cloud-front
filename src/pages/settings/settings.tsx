@@ -9,7 +9,7 @@ import {
 	Image,
 	useColorModeValue
 } from '@chakra-ui/react';
-import Header from '../../template/header/header';
+import Header from '../../components/header/header';
 import { FiSend } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 

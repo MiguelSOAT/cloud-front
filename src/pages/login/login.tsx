@@ -25,13 +25,11 @@ import { useNavigate } from 'react-router-dom';
 import { Field, Form, Formik } from 'formik';
 import './login.css';
 import cloudAnimation from '../../assets/lottie/login-cloud-computing.json';
-// import cloudComputingAnimation from '../../assets/lottie/login-cloud-computing.json';
-// import bigDataAnimation from '../../assets/lottie/login-big-data.json';
 import Lottie from 'lottie-react';
-// import simpleLogo from '../../assets/miguelsoat/logo-black-mini.svg';
 import githubLogo from '../../assets/social-media/github-mark.svg';
 import linkedinLogo from '../../assets/social-media/linkedin-mark.svg';
 import Typewriter from 'typewriter-effect';
+
 export default function SignupCard() {
 	const [showPassword, setShowPassword] = useState(false);
 
@@ -307,7 +305,6 @@ export default function SignupCard() {
 					</Link>
 				</HStack>
 			</Stack>
-			{/* </HStack> */}
 		</Grid>
 	);
 }
