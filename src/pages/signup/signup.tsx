@@ -107,7 +107,7 @@ export default function SignupCard() {
 						to join to our community 🤗
 					</Text>
 				</Stack>
-				<Box rounded={'lg'} bg={useColorModeValue('white', 'gray.700')} boxShadow={'lg'} p={8}>
+				<Box rounded={'lg'} bg={useColorModeValue('#fafafa', 'gray.700')} boxShadow={'lg'} p={8}>
 					<Stack spacing={4}>
 						<Formik
 							initialValues={{
@@ -226,7 +226,7 @@ export default function SignupCard() {
 												loadingText="Submitting"
 												size="lg"
 												bg={'blue.400'}
-												color={'white'}
+												color={'#fafafa'}
 												_hover={{
 													bg: '0000FF'
 												}}

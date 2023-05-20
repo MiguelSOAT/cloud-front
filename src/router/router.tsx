@@ -26,7 +26,7 @@ const AllRoutes = () => {
 		}
 
 		return () => {
-			setLoading(true);
+			// setLoading(true);
 		};
 	}, [setLoading]);
 
@@ -42,9 +42,11 @@ const AllRoutes = () => {
 			redirect: 'follow'
 		})
 			.then((res) => {
+				console.log(res);
 				if (res.redirected) {
 					window.location.href = res.url; // follow the redirect manually
 				}
+				setLoading(false);
 			})
 			.catch(() => {
 				window.location.pathname = '/login';

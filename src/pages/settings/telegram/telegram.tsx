@@ -147,7 +147,7 @@ function Telegram() {
 				{isLoaded ? (
 					<Stack align="stretch" direction="column" spacing={4}>
 						{botInfo()}
-						<Card bg={'white'}>
+						<Card bg={'#fafafa'}>
 							<CardBody>
 								<Formik
 									initialValues={{

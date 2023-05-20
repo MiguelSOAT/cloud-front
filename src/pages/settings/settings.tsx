@@ -20,7 +20,8 @@ function Settings() {
 				direction={{ base: 'column', sm: 'row' }}
 				overflow="hidden"
 				variant="outline"
-				bg={useColorModeValue('white', 'gray.900')}
+				bg={'#1d1d1d'}
+				color={'white'}
 			>
 				<Image
 					objectFit="cover"

@@ -98,7 +98,7 @@ function ImageBox(property: imageProps) {
 	}
 
 	const noPreviewText = (
-		<VStack bg={'gray.700'} padding={'20px'} borderRadius={'full'} color={'white'}>
+		<VStack bg={'gray.700'} padding={'20px'} borderRadius={'full'} color={'#fafafa'}>
 			<Text display="flex" fontSize={20} fontWeight="bold">
 				{property.extension}
 			</Text>
@@ -204,7 +204,17 @@ function ImageBox(property: imageProps) {
 	};
 
 	return (
-		<Box maxW="sm" borderWidth="1px" borderRadius="lg" background={'white'} h={'fit-content'}>
+		<Box
+			maxW="sm"
+			borderWidth="1px"
+			borderRadius="lg"
+			background={'#1d1d1d'}
+			h={'fit-content'}
+			boxShadow={'lg'}
+			margin={2}
+			padding={'2'}
+			overflow={'hidden'}
+		>
 			<Modal isOpen={isOpen} onClose={onClose} isCentered>
 				<ModalOverlay bg="none" backdropFilter="auto" backdropInvert="25%" backdropBlur="2px" />
 				<ModalContent>
@@ -263,7 +273,16 @@ function ImageBox(property: imageProps) {
 				>
 					{flexPreview}
 				</Center>
-				<Flex color="white" flexDirection={'row-reverse'} marginY={'5px'}>
+				<Flex
+					color="white"
+					flexDirection={{
+						base: 'column',
+						md: 'row-reverse'
+					}}
+					marginY={'5px'}
+					gap={2}
+					align={'right'}
+				>
 					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
 						{property.extension}
 					</Badge>

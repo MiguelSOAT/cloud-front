@@ -111,7 +111,7 @@ class App extends Component {
 						hasMore={this.hasMoreData}
 						loader={<Spinner />}
 					>
-						<SimpleGrid columns={[2, 3, 4]} spacing={10}>
+						<SimpleGrid columns={[2, 3, 4]} spacing={10} overflow={'auto'}>
 							{this.state.items}
 						</SimpleGrid>
 					</InfiniteScroll>
