@@ -8,8 +8,6 @@ const FloatingUploadButton: React.FC = () => {
 	const handleFileInputChange = async () => {
 		const file = fileInputRef.current?.files && fileInputRef.current?.files[0];
 		if (file) {
-			// Handle file here or trigger submit
-			console.log(file);
 			await handleSubmit(); // Trigger form submission
 		}
 	};
@@ -30,11 +28,7 @@ const FloatingUploadButton: React.FC = () => {
 					method: 'POST',
 					body: formData
 				});
-
-				// Handle response from backend
-				console.log(response);
 			} catch (error) {
-				// Handle error
 				console.error(error);
 			}
 		}

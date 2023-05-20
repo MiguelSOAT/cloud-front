@@ -44,6 +44,9 @@ function Home() {
 	const [sourceHigherNumberFiles, setSourceHigherNumberFiles] = useState<string>('WEBAPP');
 	const [sourceHigherSize, setSourceHigherSize] = useState<string>('WEBAPP');
 
+	const [typeHigherNumberFiles, setTypeHigherSize] = useState<string>('WEBAPP');
+	const [typeHigherSize, setTypeHigherNumberFiles] = useState<string>('WEBAPP');
+
 	const [totalSize, setTotalSize] = useState<string>('0');
 	const [totalConsumtion, setTotalConsumtion] = useState<string>('0');
 	const [totalConsumptionPercentage, setTotalConsumptionPercentage] = useState<string>('0');
@@ -191,11 +194,23 @@ function Home() {
 			const typesLabel: string[] = [];
 			const typesDatasetCount: number[] = [];
 			const typesDatasetSize: number[] = [];
+			let typeHigherNumberFiles = '';
+			let typeHigherSize = '';
 			for (const [key, value] of Object.entries(typesData)) {
 				typesLabel.push(key.toUpperCase());
 				typesDatasetCount.push(value.count);
 				typesDatasetSize.push(value.size / 1e9);
+
+				if (!typeHigherNumberFiles || typesData[typeHigherNumberFiles]?.count < value.count) {
+					typeHigherNumberFiles = key;
+				}
+
+				if (!typeHigherSize || typesData[typeHigherSize]?.size < value.size) {
+					typeHigherSize = key;
+				}
 			}
+			setTypeHigherSize(typeHigherSize.toUpperCase());
+			setTypeHigherNumberFiles(typeHigherNumberFiles.toUpperCase());
 
 			setDataTypeCount({
 				labels: typesLabel,
@@ -232,14 +247,17 @@ function Home() {
 				sourceLabel.push(key.toUpperCase());
 				sourceDatasetCount.push(value.count);
 				sourceDatasetSize.push(value.size / 1e9);
-				if (sourceData[sourceHigherNumberFiles].count < value.count) {
+				if (!sourceHigherNumberFiles || sourceData[sourceHigherNumberFiles]?.count < value.count) {
 					sourceHigherNumberFiles = key;
 				}
 
-				if (sourceData[sourceHigherSize].size < value.size) {
+				if (!sourceHigherSize || sourceData[sourceHigherSize]?.size < value.size) {
 					sourceHigherSize = key;
 				}
 			}
+
+			setSourceHigherSize(sourceHigherSize.toUpperCase());
+			setSourceHigherNumberFiles(sourceHigherNumberFiles.toUpperCase());
 
 			setDataSourceSize({
 				labels: sourceLabel,
@@ -273,7 +291,12 @@ function Home() {
 	return (
 		<Header>
 			<Flex direction={'column'} gap={8} overflow={'hidden'} color={'#f1f1f1'}>
-				<Flex direction={{ base: 'column', md: 'row' }} align={'left'} gap={8}>
+				<Flex
+					direction={{ base: 'column', md: 'row' }}
+					align={'left'}
+					gap={8}
+					justifyContent="space-between"
+				>
 					<Flex
 						width={{ base: '100%', md: '60%' }}
 						bg="#1d1d1d"
@@ -291,14 +314,12 @@ function Home() {
 						>
 							Welcome back, {localStorage.getItem('username')}!
 						</Text>
-						<Spacer />
 						<Box padding={{ base: '20px 5%', md: '0 15%' }}>
 							<Lottie animationData={welcomeAnimation} />
 						</Box>
 					</Flex>
-					<Spacer />
 					<Flex
-						width={{ base: '100%', md: '35%' }}
+						width={{ base: '100%', md: '37.5%' }}
 						bg="#1d1d1d"
 						borderRadius={'2xl'}
 						padding={'10'}
@@ -338,12 +359,17 @@ function Home() {
 				</Flex>
 				<Flex align={'left'} bg="#1d1d1d" borderRadius={'2xl'} padding={{ base: '5', md: '2vw' }}>
 					<Text fontSize={'2xl'} fontWeight={'light'}>
-						Here are some statistics about the file uploaded types! 📁
+						Here are some statistics on the types of files uploaded! 📁
 					</Text>
 				</Flex>
-				<Flex direction={{ base: 'column', md: 'row' }} align={'left'} gap={8}>
+				<Flex
+					direction={{ base: 'column', md: 'row' }}
+					align={'left'}
+					gap={8}
+					justifyContent="space-between"
+				>
 					<Flex
-						width={{ base: '100%', md: '35%' }}
+						width={{ base: '100%', md: '37.5%' }}
 						bg="#1d1d1d"
 						borderRadius={'2xl'}
 						padding={{ base: '5', md: '10' }}
@@ -351,7 +377,14 @@ function Home() {
 						gap={8}
 					>
 						<Text fontSize={'2xl'} fontWeight="light">
-							The source with the higher size cuota is{' '}
+							The file type with the largest storage used is{' '}
+							<span
+								style={{
+									fontWeight: 'bold'
+								}}
+							>
+								{typeHigherSize}
+							</span>
 						</Text>
 
 						{dataTypeSize && (
@@ -369,7 +402,6 @@ function Home() {
 							</Box>
 						)}
 					</Flex>
-					<Spacer />
 					<Flex
 						width={{ base: '100%', md: '60%' }}
 						bg="#1d1d1d"
@@ -379,7 +411,14 @@ function Home() {
 						gap={8}
 					>
 						<Text fontSize={'2xl'} fontWeight="light">
-							The source with the higher number of files is{' '}
+							The file type with the largest number of units is{' '}
+							<span
+								style={{
+									fontWeight: 'bold'
+								}}
+							>
+								{typeHigherNumberFiles}
+							</span>
 						</Text>
 						{dataTypeCount && (
 							<Box margin={'auto auto 0'} width={'90%'}>
@@ -390,12 +429,17 @@ function Home() {
 				</Flex>
 				<Flex align={'left'} bg="#1d1d1d" borderRadius={'2xl'} padding={{ base: '5', md: '2vw' }}>
 					<Text fontSize={'2xl'} fontWeight="light">
-						These are the statistics about the source of the files uploaded! 📊
+						These are the statistics on the origin of the uploaded files! 📊
 					</Text>
 				</Flex>
-				<Flex direction={{ base: 'column', md: 'row' }} align={'left'} gap={8}>
+				<Flex
+					direction={{ base: 'column', md: 'row' }}
+					align={'left'}
+					gap={8}
+					justifyContent="space-between"
+				>
 					<Flex
-						width={{ base: '100%', md: '47.5%' }}
+						width={{ base: '100%', md: '48.75%' }}
 						bg="#1d1d1d"
 						borderRadius={'2xl'}
 						padding={'10'}
@@ -403,7 +447,14 @@ function Home() {
 						gap={8}
 					>
 						<Text fontSize={'2xl'} fontWeight="light">
-							The source with the higher number of files uploaded is {sourceHigherNumberFiles}
+							The source with the higher number of files uploaded is{' '}
+							<span
+								style={{
+									fontWeight: 'bold'
+								}}
+							>
+								{sourceHigherNumberFiles}
+							</span>
 						</Text>
 						{dataSourceCount && (
 							<Box margin={'auto auto 0'} width={'70%'}>
@@ -411,9 +462,8 @@ function Home() {
 							</Box>
 						)}
 					</Flex>
-					<Spacer />
 					<Flex
-						width={{ base: '100%', md: '47.5%' }}
+						width={{ base: '100%', md: '48.75%' }}
 						bg="#1d1d1d"
 						borderRadius={'2xl'}
 						padding={{ base: '5', md: '10' }}
@@ -421,7 +471,14 @@ function Home() {
 						gap={8}
 					>
 						<Text fontSize={'2xl'} fontWeight="light">
-							The source with the higher size cuota is {sourceHigherSize}
+							The source with the higher size cuota is{' '}
+							<span
+								style={{
+									fontWeight: 'bold'
+								}}
+							>
+								{sourceHigherSize}
+							</span>
 						</Text>
 						{dataSourceSize && (
 							<Box margin={'auto'} width={'70%'}>

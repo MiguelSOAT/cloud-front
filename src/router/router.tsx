@@ -42,7 +42,6 @@ const AllRoutes = () => {
 			redirect: 'follow'
 		})
 			.then((res) => {
-				console.log(res);
 				if (res.redirected) {
 					window.location.href = res.url; // follow the redirect manually
 				}
