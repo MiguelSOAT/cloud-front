@@ -11,14 +11,7 @@ export default function WelcomeComponent(props: any) {
 			padding={{ base: '5', md: '10' }}
 			direction={'column'}
 		>
-			<Text
-				fontSize="5xl"
-				fontWeight="light"
-				// color="#1d1d1d"
-				align={'center'}
-				display="flex"
-				alignItems="center"
-			>
+			<Text fontSize="5xl" fontWeight="light" align={'center'} display="flex" alignItems="center">
 				Welcome back, {localStorage.getItem('username')}!
 			</Text>
 			<Box padding={{ base: '20px 5%', md: '0 15%' }}>

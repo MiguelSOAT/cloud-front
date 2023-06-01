@@ -11,19 +11,15 @@ import {
 	ModalContent,
 	ModalFooter,
 	ModalOverlay,
-	Toast,
-	ToastProps,
 	VStack,
 	useDisclosure,
-	useToast,
-	useColorModeValue,
-	Button
+	useToast
 } from '@chakra-ui/react';
 import { Text } from '@chakra-ui/react';
 import { DownloadIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
-import { MouseEventHandler, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
-import './image-box.css';
+import { timeEnd } from 'console';
 interface imageProps {
 	imageAlt: string;
 	title: string;
@@ -36,13 +32,14 @@ interface imageProps {
 	origin: string;
 }
 function ImageBox(property: imageProps) {
-	const imageSrc = `data:image/png;base64,${property.image}`;
+	const imageSrc = `data:image/webp;base64,${property.image}`;
 	const { isOpen, onOpen, onClose } = useDisclosure();
-	const [progress, setProgress] = useState(0);
+	const [isHovered, setIsHovered] = useState(false);
 	const toast = useToast();
 	const toastIdRef = useRef<string | number | undefined>();
 	const charToastLength = 15;
-	const [isHovered, setIsHovered] = useState(false);
+	const hasPreview = property.hasPreview && property.extension !== 'pdf';
+	const isPDF = property.extension === 'pdf';
 
 	function downloadToast(percentage: number, isFinished: boolean = false) {
 		return (
@@ -87,27 +84,33 @@ function ImageBox(property: imageProps) {
 		});
 	}
 
-	function addDeleteToast() {
+	function addToast(
+		title: string,
+		subtitle: string,
+		status: 'success' | 'error' | 'warning' | 'info'
+	) {
 		toastIdRef.current = toast({
 			position: 'bottom-left',
 			duration: 2000,
-			title: 'File deleted',
-			status: 'success',
-			isClosable: true
+			title: title,
+			description: subtitle,
+			status: status
 		});
 	}
 
-	const noPreviewText = (
-		<VStack bg={'gray.700'} padding={'20px'} borderRadius={'full'} color={'#fafafa'}>
-			<Text display="flex" fontSize={20} fontWeight="bold">
-				{property.extension}
-			</Text>
-			<Text display="flex" fontSize={15} fontWeight="normal">
-				No preview available
-			</Text>
-		</VStack>
-	);
-	const flexPreview = property.hasPreview ? (
+	const noPreviewText = (isPDF: boolean = false) => {
+		return (
+			<VStack bg={'gray.700'} padding={'20px'} borderRadius={'full'} color={'#fafafa'}>
+				<Text display="flex" fontSize={20} fontWeight="bold">
+					{property.extension}
+				</Text>
+				<Text display="flex" fontSize={15} fontWeight="normal">
+					{isPDF ? 'Click to preview' : 'No preview available'}
+				</Text>
+			</VStack>
+		);
+	};
+	const flexPreview = hasPreview ? (
 		<Image
 			src={imageSrc}
 			alt={property.imageAlt}
@@ -118,10 +121,10 @@ function ImageBox(property: imageProps) {
 			borderRadius={5}
 		/>
 	) : (
-		noPreviewText
+		noPreviewText(property.extension === 'pdf')
 	);
 
-	const modalPreview = property.hasPreview ? (
+	const modalPreview = hasPreview ? (
 		<Image
 			src={imageSrc}
 			alt={property.imageAlt}
@@ -131,12 +134,20 @@ function ImageBox(property: imageProps) {
 			margin="5px"
 			borderRadius={5}
 		/>
+	) : isPDF ? (
+		<object
+			data={`data:application/pdf;base64,${property.image}`}
+			type="application/pdf"
+			width="100%"
+			height="600px"
+		>
+			<p>Unable to display PDF file. Download instead</p>
+		</object>
 	) : (
-		noPreviewText
+		noPreviewText()
 	);
 
-	const downloadFile = async () => {
-		addDownloadToast();
+	const doGetFile = async () => {
 		const response = await fetch(`/api/v1/file?id=${property.fileId}`, {
 			method: 'GET',
 			headers: {
@@ -148,7 +159,20 @@ function ImageBox(property: imageProps) {
 			redirect: 'follow'
 		});
 
-		handleDownload(response);
+		return response;
+	};
+
+	const downloadFile = async () => {
+		addDownloadToast();
+
+		const response = await doGetFile();
+		const downloadedData = await handleDownload(response);
+
+		if (downloadedData?.blob) {
+			saveAs(downloadedData.blob, downloadedData.fileName, {
+				autoBom: false
+			});
+		}
 	};
 
 	const deleteFile = () => {
@@ -163,16 +187,24 @@ function ImageBox(property: imageProps) {
 			redirect: 'follow'
 		})
 			.then((res) => {
-				addDeleteToast();
+				addToast('File delete', 'File deleted successfully', 'success');
 				onClose();
 				property.onDelete(property.fileId);
 			})
 			.catch(() => {
-				// window.location.reload();
+				addToast('File delete', 'Error deleting file', 'error');
 			});
 	};
 
-	const handleDownload = async (response: any) => {
+	const handleDownload = async (
+		response: any
+	): Promise<
+		| {
+				blob: Blob;
+				fileName: string;
+		  }
+		| undefined
+	> => {
 		if (response.ok) {
 			const contentLength = response.headers.get('Content-Length');
 			const contentType = response.headers.get('content-type');
@@ -188,15 +220,20 @@ function ImageBox(property: imageProps) {
 					const { done, value } = await reader.read();
 					if (done) break;
 					loaded += value.length;
-					setProgress((loaded / total) * 100);
+					// setProgress((loaded / total) * 100);
 					update((loaded / total) * 100);
 					chunks.push(value);
 				}
 				const blob = new Blob(chunks, { type: contentType });
-				console.log(blob);
-				saveAs(blob, property.title, {
-					autoBom: false
-				});
+				const fileName = response.headers
+					.get('Content-Disposition')
+					?.split('filename=')[1]
+					.replace(/"/g, '');
+				console.log(fileName);
+				return {
+					blob,
+					fileName
+				};
 			}
 		} else {
 			console.error('Download failed');
@@ -267,7 +304,11 @@ function ImageBox(property: imageProps) {
 					marginTop={'10%'}
 					onClick={onOpen}
 					cursor={'pointer'}
-					className={isHovered ? 'hover-effect' : ''}
+					_hover={{
+						transform: 'scale(1.1)',
+						transition: 'all 0.3s ease-in-out',
+						zIndex: '1'
+					}}
 					onMouseEnter={() => setIsHovered(true)}
 					onMouseLeave={() => setIsHovered(false)}
 				>
@@ -280,8 +321,8 @@ function ImageBox(property: imageProps) {
 						md: 'row-reverse'
 					}}
 					marginY={'5px'}
-					gap={2}
-					align={'right'}
+					gap={5}
+					justify={'center'}
 				>
 					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
 						{property.extension}

@@ -44,8 +44,9 @@ const AllRoutes = () => {
 			.then((res) => {
 				if (res.redirected) {
 					window.location.href = res.url; // follow the redirect manually
-				}
-				setLoading(false);
+				} else if (res.ok) {
+					setLoading(false);
+				} else window.location.pathname = '/login';
 			})
 			.catch(() => {
 				window.location.pathname = '/login';

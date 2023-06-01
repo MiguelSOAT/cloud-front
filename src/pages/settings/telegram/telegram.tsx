@@ -9,7 +9,6 @@ import {
 	CardBody,
 	Stack,
 	StackDivider,
-	useColorModeValue,
 	Link,
 	Alert,
 	AlertIcon,
@@ -17,13 +16,15 @@ import {
 	AlertTitle,
 	FormErrorMessage,
 	Spinner,
-	Flex
+	Flex,
+	useToast
 } from '@chakra-ui/react';
 import { Field, Form, Formik } from 'formik';
 import { useState } from 'react';
 import Header from '../../../components/header/header';
 
 function Telegram() {
+	const toast = useToast();
 	const [telegramId, setTelegramId] = useState('');
 	const [securityToken, setSecurityToken] = useState('');
 	const [firstLoad, setFirstLoad] = useState(true);
@@ -47,6 +48,16 @@ function Telegram() {
 		return error;
 	}
 
+	function addToast(message: string, ok: boolean) {
+		toast({
+			position: 'bottom-left',
+			duration: 3000,
+			title: 'Telegram Account Configuration',
+			status: ok ? 'success' : 'error',
+			description: message
+		});
+	}
+
 	const getCredentials = () => {
 		fetch('/api/v1/user/telegram', {
 			method: 'GET',
@@ -66,6 +77,9 @@ function Telegram() {
 					setHasData(true);
 				}
 				setIsLoaded(true);
+			})
+			.catch(() => {
+				setIsLoaded(true);
 			});
 	};
 
@@ -83,10 +97,22 @@ function Telegram() {
 				telegramId: values.telegramId,
 				securityToken: values.securityToken
 			})
-		}).then((response) => {
-			actions.setSubmitting(false);
-			setHasData(true);
-		});
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				addToast(data.message, data.ok);
+				actions.setSubmitting(false);
+				if (data.ok) {
+					setHasData(true);
+				} else {
+					setTelegramId('');
+					setSecurityToken('');
+				}
+			})
+			.catch(() => {
+				actions.setSubmitting(false);
+				addToast('Error updating credentials, try again later', false);
+			});
 	};
 
 	const deleteCredentials = () => {
@@ -206,9 +232,11 @@ function Telegram() {
 													</FormControl>
 													<Button
 														mt={4}
-														colorScheme="teal"
+														color={'white'}
+														backgroundColor={'#1a51fb'}
 														isLoading={props.isSubmitting}
 														type="submit"
+														_hover={{ bg: '#3264ff' }}
 													>
 														Update
 													</Button>

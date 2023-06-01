@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactText } from 'react';
+import { ReactNode, ReactText } from 'react';
 import { Link as RouterLink, NavLink } from 'react-router-dom';
 import {
 	IconButton,
@@ -23,14 +23,14 @@ import {
 	MenuList,
 	Breadcrumb,
 	BreadcrumbItem,
-	Divider,
-	Image
+	Divider
 } from '@chakra-ui/react';
-import { FiHome, FiCompass, FiSettings, FiMenu, FiBell, FiChevronDown } from 'react-icons/fi';
+import { FiHome, FiCompass, FiSettings, FiMenu, FiChevronDown } from 'react-icons/fi';
 import { IconType } from 'react-icons';
 import { ChevronRightIcon } from '@chakra-ui/icons';
-// import simpleLogo from '../../assets/miguelsoat/logo-white-mini.svg';
 import FloatingUploadButton from '../floating-upload-button/floating-upload-button';
+import { useLocation } from 'react-router-dom';
+
 interface LinkItemProps {
 	name: string;
 	icon: IconType;
@@ -39,7 +39,6 @@ interface LinkItemProps {
 const LinkItems: Array<LinkItemProps> = [
 	{ name: 'Home', icon: FiHome, path: '/' },
 	{ name: 'Explorador', icon: FiCompass, path: '/explore' },
-	// { name: 'Favoritos', icon: FiStar, path: '/favorite' },
 	{ name: 'Ajustes', icon: FiSettings, path: '/settings' }
 ];
 
@@ -124,6 +123,8 @@ const DinamycBreadCrumb = () => {
 };
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+	const location = useLocation();
+	const currentPath = location.pathname;
 	return (
 		<Box
 			transition="3s ease"
@@ -134,7 +135,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 			backgroundColor={'#1e1e1e'}
 			{...rest}
 		>
-			<Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+			<Flex h="20" alignItems="center" justifyContent="space-between">
 				<Text
 					display={'flex'}
 					maxH={{ base: '300px', md: 'flex' }}
@@ -142,26 +143,33 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 					color={'white'}
 					fontSize="lg"
 					fontWeight="bold"
+					w={'full'}
+					justifyContent="center"
 				>
 					MIGUELSOAT
 				</Text>
 				<CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
 			</Flex>
-			{LinkItems.map((link) => (
-				<NavItem
-					_hover={{
-						bg: '#1a51fb',
-						color: '#fafafa'
-					}}
-					onClose={onClose}
-					key={link.name}
-					icon={link.icon}
-					path={link.path || '/'}
-					color={'#fafafa'}
-				>
-					{link.name}
-				</NavItem>
-			))}
+			{LinkItems.map((link) => {
+				const isCurrent = currentPath === link.path;
+				return (
+					<NavItem
+						_hover={{
+							bg: '#1a51fb',
+							color: '#fafafa'
+						}}
+						onClose={onClose}
+						key={link.name}
+						icon={link.icon}
+						path={link.path || '/'}
+						color={'#fafafa'}
+						bg={isCurrent ? '#1a51fb' : undefined}
+						margin={'5px 5%'}
+					>
+						{link.name}
+					</NavItem>
+				);
+			})}
 		</Box>
 	);
 };
@@ -209,7 +217,21 @@ const NavItem = ({ onClose, icon, children, path, ...rest }: NavItemProps) => {
 		</Link>
 	);
 };
-
+const logout = () => {
+	fetch('/api/v1/logout', {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	})
+		.then((response) => {
+			window.location.href = '/login';
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+};
 interface MobileProps extends FlexProps {
 	onOpen: () => void;
 }
@@ -262,20 +284,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 							bg={useColorModeValue('#fafafa', 'gray.900')}
 							borderColor={useColorModeValue('gray.200', 'gray.700')}
 						>
-							<MenuItem
-								onClick={() => {
-									fetch('/api/v1/logout', {
-										method: 'POST',
-										credentials: 'include',
-										headers: {
-											'Content-Type': 'application/json'
-										}
-									}).then((response) => {
-										window.location.href = '/login';
-									});
-								}}
-								color={'#1d1d1d'}
-							>
+							<MenuItem onClick={logout} color={'#1d1d1d'}>
 								Sign out
 							</MenuItem>
 						</MenuList>

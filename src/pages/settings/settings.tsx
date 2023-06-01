@@ -1,14 +1,4 @@
-import {
-	Button,
-	Card,
-	CardBody,
-	CardFooter,
-	Heading,
-	Stack,
-	Text,
-	Image,
-	useColorModeValue
-} from '@chakra-ui/react';
+import { Button, Card, CardBody, CardFooter, Heading, Stack, Text, Image } from '@chakra-ui/react';
 import Header from '../../components/header/header';
 import { FiSend } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
@@ -38,8 +28,15 @@ function Settings() {
 					</CardBody>
 
 					<CardFooter>
-						<Button variant="solid" colorScheme="telegram" leftIcon={<FiSend />}>
-							<Link to={'/settings/telegram'}>Configurate</Link>
+						<Button
+							as={Link}
+							variant="solid"
+							backgroundColor={'#1a51fb'}
+							leftIcon={<FiSend />}
+							_hover={{ bg: '#3264ff' }}
+							to={'/settings/telegram'}
+						>
+							Configurate
 						</Button>
 					</CardFooter>
 				</Stack>

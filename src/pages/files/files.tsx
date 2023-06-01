@@ -81,6 +81,7 @@ class App extends Component {
 			const response = await axios.get(
 				'/api/v1/files?page=' + this.currentPage + '&pageSize=' + this.pageSize
 			);
+
 			const images = await response.data.images;
 			this.currentPage += 1;
 			this.hasMoreData = images.length === this.pageSize;
