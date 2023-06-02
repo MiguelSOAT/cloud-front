@@ -3,8 +3,8 @@ import { SimpleGrid, Spinner } from '@chakra-ui/react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import Header from '../../components/header/header';
-import { Component, MouseEventHandler, useState } from 'react';
-
+import { Component, MouseEventHandler, useEffect, useState } from 'react';
+import { socket } from '../../socket';
 interface status {
 	items: JSX.Element[];
 }
@@ -19,47 +19,46 @@ interface image {
 	origin: string;
 }
 
-class App extends Component {
-	private isLoaded: boolean;
-	private currentPage: number;
-	private pages: number;
-	private pageSize: number;
-	private hasMoreData: boolean;
-	public state: status = {
+export default function Files() {
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [pageSize, setPageSize] = useState<number>(10);
+	const [hasMoreData, setHasMoreData] = useState<boolean>(true);
+	const [isLoaded, setIsLoaded] = useState<boolean>(false);
+	const [state, setState] = useState<status>({
 		items: []
-	};
+	});
 
-	constructor(props: any) {
-		super(props);
-		this.isLoaded = false;
-		this.currentPage = 1;
-		this.pages = 0;
-		this.pageSize = 10;
-		this.hasMoreData = true;
-	}
+	socket.on('refreshFiles', async (username) => {
+		if (username === localStorage.getItem('username')) {
+			setCurrentPage(1);
+			setHasMoreData(true);
+			setIsLoaded(false);
+			setState({ items: [] });
+		}
+	});
 
-	handleDelete = (fileId: number) => {
-		for (const index in this.state.items) {
-			const imageBox = this.state.items[index];
+	const handleDelete = (fileId: number) => {
+		for (const index in state.items) {
+			const imageBox = state.items[index];
 			if (imageBox.key === fileId.toString()) {
-				this.state.items.splice(parseInt(index), 1);
-				this.setState({ items: this.state.items });
+				state.items.splice(parseInt(index), 1);
+				setState({ items: state.items });
 				break;
 			}
 		}
 	};
 
-	getMoreImages(images: image[]) {
-		const array: JSX.Element[] = this.state ? this.state.items : [];
+	const getMoreImages = (images: image[]) => {
+		const array: JSX.Element[] = state ? state.items : [];
 		for (const imageIndex in images) {
 			const image = images[imageIndex];
-			array.push(this.getPhotoComponent(image, parseInt(imageIndex)));
+			array.push(getPhotoComponent(image, parseInt(imageIndex)));
 		}
 
 		return array;
-	}
+	};
 
-	getPhotoComponent(image: image, imageIndex: number): JSX.Element {
+	const getPhotoComponent = (image: image, imageIndex: number): JSX.Element => {
 		return (
 			<ImageBox
 				imageAlt={image.file_name}
@@ -69,57 +68,50 @@ class App extends Component {
 				hasPreview={image.hasPreview}
 				fileId={image.fileId}
 				fileSize={image.fileSize}
-				onDelete={this.handleDelete}
+				onDelete={handleDelete}
 				key={image.fileId}
 				origin={image.origin}
 			></ImageBox>
 		);
-	}
+	};
 
-	fetchMoreData = async () => {
+	const fetchMoreData = async () => {
 		try {
 			const response = await axios.get(
-				'/api/v1/files?page=' + this.currentPage + '&pageSize=' + this.pageSize
+				'/api/v1/files?page=' + currentPage + '&pageSize=' + pageSize
 			);
 
 			const images = await response.data.images;
-			this.currentPage += 1;
-			this.hasMoreData = images.length === this.pageSize;
-			if (!this.isLoaded) this.isLoaded = true;
+			setCurrentPage(currentPage + 1);
+			setHasMoreData(images.length === pageSize);
+			if (!isLoaded) setIsLoaded(true);
 
-			this.setState({
-				items: this.getMoreImages(images)
+			setState({
+				items: getMoreImages(images)
 			});
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	render() {
-		if (
-			(this.state.items.length === 0 || this.state.items.length < this.pageSize) &&
-			!this.isLoaded
-		) {
-			this.isLoaded = true;
-			this.fetchMoreData();
-		}
-		return (
-			<Header>
-				<div>
-					<InfiniteScroll
-						dataLength={this.state.items.length}
-						next={this.fetchMoreData}
-						hasMore={this.hasMoreData}
-						loader={<Spinner />}
-					>
-						<SimpleGrid columns={[2, 3, 4]} spacing={10} overflow={'auto'}>
-							{this.state.items}
-						</SimpleGrid>
-					</InfiniteScroll>
-				</div>
-			</Header>
-		);
+	if ((state.items.length === 0 || state.items.length < pageSize) && !isLoaded) {
+		setIsLoaded(true);
+		fetchMoreData();
 	}
+	return (
+		<Header>
+			<div>
+				<InfiniteScroll
+					dataLength={state.items.length}
+					next={fetchMoreData}
+					hasMore={hasMoreData}
+					loader={<Spinner />}
+				>
+					<SimpleGrid columns={[2, 3, 4]} spacing={10} overflow={'auto'}>
+						{state.items}
+					</SimpleGrid>
+				</InfiniteScroll>
+			</div>
+		</Header>
+	);
 }
-
-export default App;
