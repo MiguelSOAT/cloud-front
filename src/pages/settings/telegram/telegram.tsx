@@ -197,7 +197,7 @@ function Telegram() {
 															}
 														>
 															<FormLabel>Telegram ID</FormLabel>
-															<Input {...formikObject.field} type="text" disabled={hasData} />
+															<Input {...formikObject.field} type="number" disabled={hasData} />
 															<FormErrorMessage>
 																{formikObject.form.errors.telegramId}
 															</FormErrorMessage>

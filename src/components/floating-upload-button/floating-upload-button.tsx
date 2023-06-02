@@ -27,38 +27,29 @@ const FloatingUploadButton: React.FC = () => {
 				formData.append('files', fileInputRef.current.files[fileIndex]);
 			}
 
-			try {
-				const response = await fetch('/api/v1/files', {
-					method: 'POST',
-					body: formData
-				});
-
-				if (response.ok) {
+			fetch('/api/v1/files', {
+				method: 'POST',
+				body: formData
+			})
+				.then((res) => res.json())
+				.then((data) => {
 					toast({
 						title: 'File upload',
-						description: 'Your file has been uploaded successfully',
-						status: 'success',
+						description: data.message || 'Unknowkn error while trying to upload your files.',
+						status: data.ok ? 'success' : 'error',
 						duration: 3000,
 						position: 'bottom-left'
 					});
-				} else {
+				})
+				.catch((err) => {
 					toast({
 						title: 'File upload',
-						description: 'Error while trying to upload your file',
+						description: 'Error while trying to upload your files',
 						status: 'error',
 						duration: 3000,
 						position: 'bottom-left'
 					});
-				}
-			} catch (error) {
-				toast({
-					title: 'File upload',
-					description: 'Error while trying to upload your file',
-					status: 'error',
-					duration: 3000,
-					position: 'bottom-left'
 				});
-			}
 		}
 	};
 

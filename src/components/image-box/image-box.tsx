@@ -19,7 +19,7 @@ import { Text } from '@chakra-ui/react';
 import { DownloadIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
-import { timeEnd } from 'console';
+
 interface imageProps {
 	imageAlt: string;
 	title: string;
@@ -321,8 +321,9 @@ function ImageBox(property: imageProps) {
 						md: 'row-reverse'
 					}}
 					marginY={'5px'}
-					gap={5}
+					gap={3}
 					justify={'center'}
+					flexWrap={'wrap'}
 				>
 					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
 						{property.extension}
