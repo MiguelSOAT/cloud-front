@@ -1,6 +1,7 @@
 import { DownloadIcon } from '@chakra-ui/icons';
 import { IconButton, Box, useToast } from '@chakra-ui/react';
 import React, { useRef } from 'react';
+import followRedirect from '../../utils/follow-redirect';
 
 const FloatingUploadButton: React.FC = () => {
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -31,7 +32,10 @@ const FloatingUploadButton: React.FC = () => {
 				method: 'POST',
 				body: formData
 			})
-				.then((res) => res.json())
+				.then((res) => {
+					followRedirect(res);
+					return res.json();
+				})
 				.then((data) => {
 					toast({
 						title: 'File upload',

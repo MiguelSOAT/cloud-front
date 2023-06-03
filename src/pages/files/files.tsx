@@ -5,6 +5,7 @@ import axios from 'axios';
 import Header from '../../components/header/header';
 import { Component, MouseEventHandler, useEffect, useState } from 'react';
 import { socket } from '../../socket';
+import followRedirect from '../../utils/follow-redirect';
 interface status {
 	items: JSX.Element[];
 }
@@ -77,18 +78,32 @@ export default function Files() {
 
 	const fetchMoreData = async () => {
 		try {
-			const response = await axios.get(
-				'/api/v1/files?page=' + currentPage + '&pageSize=' + pageSize
-			);
+			fetch('/api/v1/files?page=' + currentPage + '&pageSize=' + pageSize, {
+				method: 'GET',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+				.then((res) => {
+					followRedirect(res);
+					return res.json();
+				})
+				.then((data) => {
+					const images = data.images;
+					setCurrentPage(currentPage + 1);
+					setHasMoreData(images.length === pageSize);
+					if (!isLoaded) setIsLoaded(true);
 
-			const images = await response.data.images;
-			setCurrentPage(currentPage + 1);
-			setHasMoreData(images.length === pageSize);
-			if (!isLoaded) setIsLoaded(true);
+					setState({
+						items: getMoreImages(images)
+					});
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 
-			setState({
-				items: getMoreImages(images)
-			});
+			// followRedirect(response);
 		} catch (error) {
 			console.log(error);
 		}

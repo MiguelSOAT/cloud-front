@@ -19,6 +19,8 @@ import { Text } from '@chakra-ui/react';
 import { DownloadIcon, CheckIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useRef, useState } from 'react';
 import { saveAs } from 'file-saver';
+import followRedirect from '../../utils/follow-redirect';
+import PdfViewer from '../pdf-viewer/pdf-viewer';
 
 interface imageProps {
 	imageAlt: string;
@@ -135,14 +137,17 @@ function ImageBox(property: imageProps) {
 			borderRadius={5}
 		/>
 	) : isPDF ? (
-		<object
-			data={`data:application/pdf;base64,${property.image}`}
-			type="application/pdf"
-			width="100%"
-			height="600px"
-		>
-			<p>Unable to display PDF file. Download instead</p>
-		</object>
+		// <object
+		// 	data={`data:application/pdf;base64,${property.image}`}
+		// 	type="application/pdf"
+		// 	width="100%"
+		// 	height="600px"
+		// >
+		// 	<p>Unable to display PDF file. Download instead</p>
+		// </object>
+		<>
+			<PdfViewer />
+		</>
 	) : (
 		noPreviewText()
 	);
@@ -158,6 +163,8 @@ function ImageBox(property: imageProps) {
 			credentials: 'same-origin',
 			redirect: 'follow'
 		});
+
+		followRedirect(response);
 
 		return response;
 	};
@@ -187,6 +194,7 @@ function ImageBox(property: imageProps) {
 			redirect: 'follow'
 		})
 			.then((res) => {
+				followRedirect(res);
 				addToast('File delete', 'File deleted successfully', 'success');
 				onClose();
 				property.onDelete(property.fileId);

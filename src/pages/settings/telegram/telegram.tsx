@@ -22,6 +22,7 @@ import {
 import { Field, Form, Formik } from 'formik';
 import { useState } from 'react';
 import Header from '../../../components/header/header';
+import followRedirect from '../../../utils/follow-redirect';
 
 function Telegram() {
 	const toast = useToast();
@@ -67,9 +68,12 @@ function Telegram() {
 			mode: 'same-origin', // no-cors, *cors, same-origin
 			cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
 			credentials: 'same-origin',
-			redirect: 'follow'
+			redirect: 'manual'
 		})
-			.then((response) => response.json())
+			.then((response) => {
+				followRedirect(response);
+				return response.json();
+			})
 			.then((data) => {
 				setTelegramId(data.telegramId);
 				setSecurityToken(data.securityToken);
@@ -98,7 +102,10 @@ function Telegram() {
 				securityToken: values.securityToken
 			})
 		})
-			.then((response) => response.json())
+			.then((response) => {
+				followRedirect(response);
+				return response.json();
+			})
 			.then((data) => {
 				addToast(data.message, data.ok);
 				actions.setSubmitting(false);
@@ -127,6 +134,7 @@ function Telegram() {
 			credentials: 'same-origin',
 			redirect: 'follow'
 		}).then((response) => {
+			followRedirect(response);
 			setIsLoaded(true);
 			setHasData(false);
 		});

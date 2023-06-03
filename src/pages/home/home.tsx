@@ -18,6 +18,7 @@ import CloudCuotaComponent from '../../components/home-components/cloud-cuota-co
 import PieComponent from '../../components/home-components/pie-component';
 import BarComponent from '../../components/home-components/bar-ccomponent';
 import StatisticsTextHeader from '../../components/home-components/statistics-text-header';
+import followRedirect from '../../utils/follow-redirect';
 
 interface IStats {
 	userStats: IUserStats;
@@ -163,41 +164,54 @@ function Home() {
 	};
 
 	useEffect(() => {
-		axios.get('api/v1/user/stats').then((res) => {
-			const responseBody: IStats = res.data;
+		fetch('api/v1/user/stats', {
+			method: 'GET',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((res) => {
+				followRedirect(res);
+				return res.json();
+			})
+			.then((data) => {
+				const responseBody: IStats = data;
 
-			const totalSize = responseBody.userStats.storage.total / 1e9;
-			const totalConsumtion = responseBody.userStats.storage.used / 1e9;
+				const totalSize = responseBody.userStats.storage.total / 1e9;
+				const totalConsumtion = responseBody.userStats.storage.used / 1e9;
 
-			const parsedTypesStatistics = parseStatistics(responseBody.userStats.fileTypes);
-			const parsedSourceStatistics = parseStatistics(responseBody.userStats.sourceStats);
+				const parsedTypesStatistics = parseStatistics(responseBody.userStats.fileTypes);
+				const parsedSourceStatistics = parseStatistics(responseBody.userStats.sourceStats);
 
-			setTotalSize(fixDecimal(totalSize));
-			setTotalConsumtion(fixDecimal(totalConsumtion));
-			setTotalConsumptionPercentage(fixDecimal((totalConsumtion / totalSize) * 100));
-			setData({
-				labels: ['Total Gastado (GB)', 'Total Libre (GB)'],
-				datasets: [
-					{
-						data: [totalConsumtion, totalSize - totalConsumtion],
-						backgroundColor: ['#ff3d00', '#52d681'],
-						borderWidth: 0
-					}
-				]
+				setTotalSize(fixDecimal(totalSize));
+				setTotalConsumtion(fixDecimal(totalConsumtion));
+				setTotalConsumptionPercentage(fixDecimal((totalConsumtion / totalSize) * 100));
+				setData({
+					labels: ['Total Gastado (GB)', 'Total Libre (GB)'],
+					datasets: [
+						{
+							data: [totalConsumtion, totalSize - totalConsumtion],
+							backgroundColor: ['#ff3d00', '#52d681'],
+							borderWidth: 0
+						}
+					]
+				});
+
+				setTypeHigherSize(parsedTypesStatistics.higherSize.toUpperCase());
+				setTypeHigherNumberFiles(parsedTypesStatistics.higherNumberFiles.toUpperCase());
+				setDataTypeCount(barData(parsedTypesStatistics.datasetCount, parsedTypesStatistics.label));
+				setDataTypeSize(pieData(parsedTypesStatistics.datasetSize, parsedTypesStatistics.label));
+
+				setSourceHigherSize(sourceHigherSize.toUpperCase());
+				setSourceHigherNumberFiles(sourceHigherNumberFiles.toUpperCase());
+				setDataSourceCount(
+					barData(parsedSourceStatistics.datasetCount, parsedSourceStatistics.label)
+				);
+				setDataSourceSize(
+					pieData(parsedSourceStatistics.datasetSize, parsedSourceStatistics.label)
+				);
 			});
-
-			setTypeHigherSize(parsedTypesStatistics.higherSize.toUpperCase());
-			setTypeHigherNumberFiles(parsedTypesStatistics.higherNumberFiles.toUpperCase());
-			setDataTypeCount(barData(parsedTypesStatistics.datasetCount, parsedTypesStatistics.label));
-			setDataTypeSize(pieData(parsedTypesStatistics.datasetSize, parsedTypesStatistics.label));
-
-			setSourceHigherSize(sourceHigherSize.toUpperCase());
-			setSourceHigherNumberFiles(sourceHigherNumberFiles.toUpperCase());
-			setDataSourceCount(
-				barData(parsedSourceStatistics.datasetCount, parsedSourceStatistics.label)
-			);
-			setDataSourceSize(pieData(parsedSourceStatistics.datasetSize, parsedSourceStatistics.label));
-		});
 	}, []);
 
 	return (

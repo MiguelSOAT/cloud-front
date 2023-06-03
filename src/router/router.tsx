@@ -8,6 +8,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Center, Spinner } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import Telegram from '../pages/settings/telegram/telegram';
+import followRedirect from '../utils/follow-redirect';
 
 const AllRoutes = () => {
 	const [loading, setLoading] = useState(true);
@@ -42,11 +43,10 @@ const AllRoutes = () => {
 			redirect: 'follow'
 		})
 			.then((res) => {
-				if (res.redirected) {
-					window.location.href = res.url; // follow the redirect manually
-				} else if (res.ok) {
+				followRedirect(res);
+				if (res.ok) {
 					setLoading(false);
-				} else window.location.pathname = '/login';
+				}
 			})
 			.catch(() => {
 				window.location.pathname = '/login';
