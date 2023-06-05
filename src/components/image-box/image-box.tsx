@@ -10,6 +10,7 @@ import {
 	ModalCloseButton,
 	ModalContent,
 	ModalFooter,
+	ModalHeader,
 	ModalOverlay,
 	VStack,
 	useDisclosure,
@@ -146,7 +147,7 @@ function ImageBox(property: imageProps) {
 		// 	<p>Unable to display PDF file. Download instead</p>
 		// </object>
 		<>
-			<PdfViewer />
+			<PdfViewer fileData={`data:application/pdf;base64,${property.image}`} />
 		</>
 	) : (
 		noPreviewText()
@@ -260,15 +261,15 @@ function ImageBox(property: imageProps) {
 			padding={'2'}
 			overflow={'hidden'}
 		>
-			<Modal isOpen={isOpen} onClose={onClose} isCentered>
+			<Modal isOpen={isOpen} onClose={onClose} isCentered motionPreset="scale" size="auto">
 				<ModalOverlay bg="none" backdropFilter="auto" backdropInvert="25%" backdropBlur="2px" />
-				<ModalContent>
-					{/* <ModalHeader></ModalHeader> */}
+				<ModalContent w={'fit-content'}>
 					<ModalCloseButton />
+					<ModalHeader></ModalHeader>
 					<ModalBody>
-						<Center flex="1" minH={'200px'} margin={'10px'} marginTop={'30px'}>
-							{modalPreview}
-						</Center>
+						{/* <Flex justify={'center'} align={'center'} margin={'5%'} marginTop={'10%'} w={'90%'}> */}
+						{modalPreview}
+						{/* </Flex> */}
 					</ModalBody>
 					<ModalFooter>
 						<Badge
