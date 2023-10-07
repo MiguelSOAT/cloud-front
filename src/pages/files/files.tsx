@@ -18,6 +18,7 @@ interface image {
 	fileId: number;
 	fileSize: number;
 	origin: string;
+	originalExtension: string;
 }
 
 export default function Files() {
@@ -72,6 +73,7 @@ export default function Files() {
 				onDelete={handleDelete}
 				key={image.fileId}
 				origin={image.origin}
+				originalExtension={image.originalExtension}
 			></ImageBox>
 		);
 	};
@@ -91,6 +93,9 @@ export default function Files() {
 				})
 				.then((data) => {
 					const images = data.images;
+					if (currentPage === 1) setState({ items: [] });
+					console.log(currentPage);
+					console.log(state.items);
 					setCurrentPage(currentPage + 1);
 					setHasMoreData(images.length === pageSize);
 					if (!isLoaded) setIsLoaded(true);
@@ -110,6 +115,7 @@ export default function Files() {
 	};
 
 	if ((state.items.length === 0 || state.items.length < pageSize) && !isLoaded) {
+		setState({ items: [] });
 		setIsLoaded(true);
 		fetchMoreData();
 	}

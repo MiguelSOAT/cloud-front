@@ -50,10 +50,10 @@ export default function LoginComponent(props: any) {
 		if (response.status === 200) {
 			localStorage.setItem('username', username);
 			navigate('/');
+		} else if (response.status === 401) {
+			formProps.setFieldError('authentication', 'Invalid username or password');
 		} else if (!response.ok) {
 			formProps.setFieldError('authentication', 'No connection to server! Please try again later.');
-		} else if (formProps) {
-			formProps.setFieldError('authentication', 'Invalid username or password');
 		}
 	}
 

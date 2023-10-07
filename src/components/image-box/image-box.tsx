@@ -33,6 +33,7 @@ interface imageProps {
 	fileSize: number;
 	onDelete: (fileId: number) => void;
 	origin: string;
+	originalExtension: string;
 }
 function ImageBox(property: imageProps) {
 	const imageSrc = `data:image/webp;base64,${property.image}`;
@@ -335,7 +336,7 @@ function ImageBox(property: imageProps) {
 					flexWrap={'wrap'}
 				>
 					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="teal">
-						{property.extension}
+						{property.originalExtension || property.extension}
 					</Badge>
 					<Badge marginX={'5px'} w={'fit-content'} borderRadius="full" px="2" colorScheme="gray">
 						{(property.fileSize * 1e-6).toPrecision(2)}MB
